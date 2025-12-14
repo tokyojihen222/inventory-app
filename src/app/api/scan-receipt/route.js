@@ -20,7 +20,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        // Use explicit model version to avoid 404s with aliases
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001' });
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
