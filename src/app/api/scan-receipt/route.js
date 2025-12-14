@@ -20,8 +20,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Flashでも制限がかかったため、さらに軽量な "gemini-2.0-flash-lite-preview-02-05" を試します
-        const modelName = 'gemini-2.0-flash-lite-preview-02-05';
+        // スクリーンショットで「5 RPM」の枠があることが確認できた "gemini-2.5-flash" を使用します
+        const modelName = 'gemini-2.5-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
 
         const arrayBuffer = await file.arrayBuffer();
