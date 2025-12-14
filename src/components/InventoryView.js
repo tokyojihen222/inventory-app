@@ -35,24 +35,24 @@ export default function InventoryView({ initialItems }) {
         : initialItems.filter(item => item.category === activeCategory);
 
     return (
-        <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1>在庫管理</h1>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <main className={styles.mainContainer} style={{ padding: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
+            <div className={styles.header} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <h1 style={{ fontSize: '1.5rem', margin: 0 }}>在庫管理</h1>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     <button
                         onClick={() => logout()}
                         className={styles.btn}
-                        style={{ fontSize: '0.875rem' }}
+                        style={{ fontSize: '0.75rem', padding: '0.5rem' }}
                     >
                         ログアウト
                     </button>
                     <ReceiptScanner onScanComplete={() => window.location.reload()} />
                     <button
                         className={`${styles.btn} ${styles.btnPrimary}`}
-                        style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}
+                        style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none', whiteSpace: 'nowrap' }}
                         onClick={handleAdd}
                     >
-                        + 商品を追加
+                        + 追加
                     </button>
                 </div>
             </div>

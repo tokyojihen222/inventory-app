@@ -68,12 +68,12 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
                 <tbody>
                     {sortedItems.map((item) => (
                         <tr key={item.id}>
-                            <td>{item.name}</td>
-                            <td>{item.category}</td>
-                            <td className={item.quantity <= item.threshold ? styles.lowStock : ''}>
+                            <td data-label="商品名">{item.name}</td>
+                            <td data-label="カテゴリ">{item.category}</td>
+                            <td data-label="在庫数" className={item.quantity <= item.threshold ? styles.lowStock : ''}>
                                 {item.quantity}
                             </td>
-                            <td>
+                            <td data-label="次回購入予測">
                                 {item.predicted_next_purchase ? (
                                     <span title={new Date(item.predicted_next_purchase).toLocaleDateString()}>
                                         {new Date(item.predicted_next_purchase).toLocaleDateString()}
