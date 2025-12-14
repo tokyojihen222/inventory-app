@@ -8,6 +8,45 @@ export async function getItems() {
     return await sql`SELECT * FROM items ORDER BY category, name`;
 }
 
+export async function bulkAddItems(items) {
+    let count = 0;
+
+    // バリデーションと登録をループ処理
+    // 注: 本来はバッチ処理すべきですが、Postgres.jsでの複雑なUPSERTを避けるため
+    // 安全に1件ずつ処理します（件数は多くないので問題ないはずです）
+    for (const item of items) {
+        try {
+            // バリデーション
+            const data = itemSchema.parse({
+                name: item.name,
+                category: item.category || '未分類',
+                quantity: item.quantity || 1,
+                threshold: 1
+            });
+
+            // 既存の商品があるか名前で検索
+            const [existing] = await sql`SELECT id, quantity FROM items WHERE name = ${data.name}`;
+
+            if (existing) {
+                // 更新
+                await updateInventory(existing.id, data.quantity, 'purchase');
+            } else {
+                // 新規作成
+                await sql`
+                    INSERT INTO items (name, category, quantity, threshold, predicted_next_purchase)
+                    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, NOW() + INTERVAL '1 month')
+                `;
+            }
+            count++;
+        } catch (e) {
+            console.error(`Failed to add item ${item.name}:`, e);
+            // 1件失敗しても他は続行
+        }
+    }
+    revalidatePath('/');
+    return { success: true, count };
+}
+
 export async function addItem(formData) {
     const rawData = {
         name: formData.get('name'),
