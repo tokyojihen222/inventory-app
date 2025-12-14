@@ -20,9 +20,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // "gemini-1.5-flash" が見つからない場合があるため、
-        // 確実性の高い "gemini-1.5-pro" を使用します（こちらも無料枠あり）
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+        // 最新モデルが認識されないため、安定版の旧モデルを使用します
+        const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
