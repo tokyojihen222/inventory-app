@@ -20,8 +20,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // ユーザーのご希望により、リストに存在した最新の "gemini-3-pro-preview" を使用します
-        const modelName = 'gemini-3-pro-preview';
+        // 3.0は無料枠で使用不可だったため、確実な "gemini-2.0-flash" を使用します
+        const modelName = 'gemini-2.0-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
 
         const arrayBuffer = await file.arrayBuffer();
