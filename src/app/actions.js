@@ -2,35 +2,45 @@
 
 import sql from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { itemSchema } from '@/lib/schemas';
 
 export async function getItems() {
     return await sql`SELECT * FROM items ORDER BY category, name`;
 }
 
 export async function addItem(formData) {
-    const name = formData.get('name');
-    const category = formData.get('category');
-    const quantity = parseInt(formData.get('quantity') || '0', 10);
-    const threshold = parseInt(formData.get('threshold') || '1', 10);
+    const rawData = {
+        name: formData.get('name'),
+        category: formData.get('category'),
+        quantity: formData.get('quantity'),
+        threshold: formData.get('threshold'),
+    };
+
+    // Validate data - will throw error if invalid (caught by Next.js error boundary)
+    const data = itemSchema.parse(rawData);
 
     // Initial prediction: 1 month from now
     await sql`
     INSERT INTO items (name, category, quantity, threshold, predicted_next_purchase)
-    VALUES (${name}, ${category}, ${quantity}, ${threshold}, NOW() + INTERVAL '1 month')
+    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, NOW() + INTERVAL '1 month')
   `;
 
     revalidatePath('/');
 }
 
 export async function updateItem(id, formData) {
-    const name = formData.get('name');
-    const category = formData.get('category');
-    const quantity = parseInt(formData.get('quantity') || '0', 10);
-    const threshold = parseInt(formData.get('threshold') || '1', 10);
+    const rawData = {
+        name: formData.get('name'),
+        category: formData.get('category'),
+        quantity: formData.get('quantity'),
+        threshold: formData.get('threshold'),
+    };
+
+    const data = itemSchema.parse(rawData);
 
     await sql`
     UPDATE items 
-    SET name = ${name}, category = ${category}, quantity = ${quantity}, threshold = ${threshold}
+    SET name = ${data.name}, category = ${data.category}, quantity = ${data.quantity}, threshold = ${data.threshold}
     WHERE id = ${id}
   `;
 
