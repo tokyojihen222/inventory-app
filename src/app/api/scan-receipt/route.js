@@ -20,8 +20,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Default to latest flash model
-        const modelName = 'gemini-1.5-flash';
+        // デバッグ情報より、gemini-2.0-flashが利用可能であることが判明したため指定
+        const modelName = 'gemini-2.0-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
 
         const arrayBuffer = await file.arrayBuffer();
