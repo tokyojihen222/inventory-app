@@ -8,6 +8,7 @@ export default function ReceiptScanner({ onScanComplete }) {
     const [isScanning, setIsScanning] = useState(false);
     const [showReview, setShowReview] = useState(false);
     const [scannedItems, setScannedItems] = useState([]);
+    const [errorMsg, setErrorMsg] = useState('');
     const fileInputRef = useRef(null);
 
     const resizeImage = (file) => {
@@ -54,6 +55,7 @@ export default function ReceiptScanner({ onScanComplete }) {
         if (!file) return;
 
         setIsScanning(true);
+        setErrorMsg(''); // Reset error
 
         try {
             // Resize image before upload
@@ -67,16 +69,26 @@ export default function ReceiptScanner({ onScanComplete }) {
                 body: formData,
             });
 
-            const result = await response.json();
+            let result;
+            const text = await response.text();
+
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error('Invalid JSON response:', text);
+                const errorMessage = text.includes('DOCTYPE') ? 'サーバーエラーが発生しました (500)' : text.substring(0, 100);
+                throw new Error(`サーバー応答エラー: ${errorMessage}`);
+            }
+
             if (result.success) {
                 setScannedItems(result.items);
                 setShowReview(true);
             } else {
-                alert('スキャンに失敗しました: ' + (result.error || '不明なエラー'));
+                setErrorMsg('スキャン失敗: ' + (result.error || '不明なエラー'));
             }
         } catch (error) {
             console.error(error);
-            alert('エラーが発生しました: ' + error.message);
+            setErrorMsg('エラー発生: ' + (error.message || error));
         } finally {
             setIsScanning(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -84,7 +96,7 @@ export default function ReceiptScanner({ onScanComplete }) {
     };
 
     return (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
             <button
                 className={`${styles.btn}`}
                 onClick={() => fileInputRef.current?.click()}
@@ -97,6 +109,27 @@ export default function ReceiptScanner({ onScanComplete }) {
                     </span>
                 ) : '📷 レシートをスキャン'}
             </button>
+
+            {errorMsg && (
+                <div style={{ marginTop: '0.5rem' }}>
+                    <p style={{ color: 'red', fontSize: '0.8rem', marginBottom: '0.2rem' }}>エラーが発生しました (コピーして共有してください):</p>
+                    <textarea
+                        readOnly
+                        value={errorMsg}
+                        style={{
+                            width: '100%',
+                            height: '80px',
+                            fontSize: '0.8rem',
+                            padding: '0.5rem',
+                            borderRadius: '4px',
+                            border: '1px solid #ccc',
+                            backgroundColor: '#fff',
+                            color: '#333'
+                        }}
+                    />
+                </div>
+            )}
+
             <input
                 type="file"
                 ref={fileInputRef}
@@ -111,6 +144,6 @@ export default function ReceiptScanner({ onScanComplete }) {
                 onClose={() => setShowReview(false)}
                 scannedItems={scannedItems}
             />
-        </>
+        </div>
     );
 }
