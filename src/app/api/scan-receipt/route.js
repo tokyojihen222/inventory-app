@@ -20,26 +20,20 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // 最新モデルが認識されないため、安定版の旧モデルを使用します
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
+        // Default to latest flash model
+        const modelName = 'gemini-1.5-flash';
+        const model = genAI.getGenerativeModel({ model: modelName });
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         const prompt = `
     あなたは家事手伝いの専門家です。このレシート画像を解析し、購入された商品をリストアップしてください。
-    
     【出力ルール】
-    1. 商品名は、具体的な製品名ではなく、管理しやすい「一般的な名称」に変換してください。
-       (例: "セブンイレブンのおにぎり" → "おにぎり", "キューピーハーフ" → "マヨネーズ", "クリネックス" → "ティッシュ")
-    2. カテゴリは「食品」「調味料」「消耗品」「日用品」「その他」の中から最も適切なものを選んでください。
-    3. 数量が読み取れない場合は 1 としてください。
-    4. 結果は以下のJSON配列形式のみを出力してください。Markdownのコードブロックは不要です。
-    
-    [
-      { "name": "商品名", "category": "カテゴリ", "quantity": 数値, "price": 単価(数値) },
-      ...
-    ]
+    1. 商品名は「一般的な名称」に変換 (例: "セブンイレブンのおにぎり" → "おにぎり")
+    2. カテゴリは「食品」「調味料」「消耗品」「日用品」「その他」から選択
+    3. JSON配列形式のみ出力
+    [ { "name": "...", "category": "...", "quantity": 1, "price": 0 } ]
     `;
 
         const imagePart = {
@@ -49,21 +43,37 @@ export async function POST(request) {
             },
         };
 
-        const result = await model.generateContent([prompt, imagePart]);
-        const responseText = result.response.text();
-
-        // Markdownコードブロック除去
-        const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-        let items = [];
         try {
-            items = JSON.parse(jsonStr);
-        } catch (e) {
-            console.error('JSON Parse Error:', responseText);
-            return NextResponse.json({ success: false, error: 'AIの応答を解析できませんでした' }, { status: 500 });
-        }
+            const result = await model.generateContent([prompt, imagePart]);
+            const responseText = result.response.text();
 
-        return NextResponse.json({ success: true, items });
+            const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const items = JSON.parse(jsonStr);
+            return NextResponse.json({ success: true, items });
+
+        } catch (genError) {
+            console.error('Generation Error:', genError);
+
+            // If model not found or other API error, try to list available models for debugging
+            let debugInfo = '';
+            try {
+                const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if (listResp.ok) {
+                    const listData = await listResp.json();
+                    const availableModels = listData.models ? listData.models.map(m => m.name) : [];
+                    debugInfo = `Available models: ${availableModels.join(', ')}`;
+                } else {
+                    debugInfo = `Failed to list models: ${listResp.status} ${listResp.statusText}`;
+                }
+            } catch (listErr) {
+                debugInfo = `Could not list models: ${listErr.message}`;
+            }
+
+            return NextResponse.json({
+                success: false,
+                error: `AI生成エラー: ${genError.message}. \n\n[デバッグ情報] API Key Prefix: ${apiKey.substring(0, 4)}... \n${debugInfo}`
+            }, { status: 500 });
+        }
 
     } catch (error) {
         console.error('Scan Error:', error);
