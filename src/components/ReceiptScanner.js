@@ -2,9 +2,12 @@
 
 import { useState, useRef } from 'react';
 import styles from './InventoryTable.module.css';
+import ReceiptReviewModal from './ReceiptReviewModal';
 
 export default function ReceiptScanner({ onScanComplete }) {
     const [isScanning, setIsScanning] = useState(false);
+    const [showReview, setShowReview] = useState(false);
+    const [scannedItems, setScannedItems] = useState([]);
     const fileInputRef = useRef(null);
 
     const resizeImage = (file) => {
@@ -66,8 +69,8 @@ export default function ReceiptScanner({ onScanComplete }) {
 
             const result = await response.json();
             if (result.success) {
-                alert(`スキャン完了: ${result.matches.length} 件の商品を更新しました。\n合計金額: ${result.total}円`);
-                if (onScanComplete) onScanComplete();
+                setScannedItems(result.items);
+                setShowReview(true);
             } else {
                 alert('スキャンに失敗しました: ' + (result.error || '不明なエラー'));
             }
@@ -86,15 +89,27 @@ export default function ReceiptScanner({ onScanComplete }) {
                 className={`${styles.btn}`}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isScanning}
+                style={{ position: 'relative', overflow: 'hidden' }}
             >
-                {isScanning ? 'スキャン中...' : '📷 レシートをスキャン'}
+                {isScanning ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span className={styles.spinner}></span> 解析中...
+                    </span>
+                ) : '📷 レシートをスキャン'}
             </button>
             <input
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                accept="image/*"
+                accept="image/*" // Allow selection of any image file
+                capture="environment" // Hint to open rear camera on mobile
                 onChange={handleFileChange}
+            />
+
+            <ReceiptReviewModal
+                isOpen={showReview}
+                onClose={() => setShowReview(false)}
+                scannedItems={scannedItems}
             />
         </>
     );
