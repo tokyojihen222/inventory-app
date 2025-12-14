@@ -1,6 +1,8 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
-import Tesseract from 'tesseract.js';
-import sql from '@/lib/db';
+
+// 処理時間を長めに確保 (Vercel Serverless Function Config)
+export const maxDuration = 60;
 
 export async function POST(request) {
     try {
@@ -8,59 +10,62 @@ export async function POST(request) {
         const file = formData.get('file');
 
         if (!file) {
-            return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
+            return NextResponse.json({ success: false, error: 'ファイルがありません' }, { status: 400 });
         }
 
-        // Convert file to buffer
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            console.error('API Key Missing');
+            return NextResponse.json({ success: false, error: 'APIキーが設定されていません' }, { status: 500 });
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        // Perform OCR
-        const { data: { text } } = await Tesseract.recognize(buffer, 'jpn', {
-            logger: m => console.log(m)
-        });
+        const prompt = `
+    あなたは家事手伝いの専門家です。このレシート画像を解析し、購入された商品をリストアップしてください。
+    
+    【出力ルール】
+    1. 商品名は、具体的な製品名ではなく、管理しやすい「一般的な名称」に変換してください。
+       (例: "セブンイレブンのおにぎり" → "おにぎり", "キューピーハーフ" → "マヨネーズ", "クリネックス" → "ティッシュ")
+    2. カテゴリは「食品」「調味料」「消耗品」「日用品」「その他」の中から最も適切なものを選んでください。
+    3. 数量が読み取れない場合は 1 としてください。
+    4. 結果は以下のJSON配列形式のみを出力してください。Markdownのコードブロックは不要です。
+    
+    [
+      { "name": "商品名", "category": "カテゴリ", "quantity": 数値, "price": 単価(数値) },
+      ...
+    ]
+    `;
 
-        console.log('OCR Text:', text);
+        const imagePart = {
+            inlineData: {
+                data: buffer.toString('base64'),
+                mimeType: file.type || 'image/jpeg',
+            },
+        };
 
-        // Parse text and match items
-        const lines = text.split('\n');
-        const items = await sql`SELECT * FROM items`;
-        const matches = [];
-        let totalCost = 0;
+        const result = await model.generateContent([prompt, imagePart]);
+        const responseText = result.response.text();
 
-        // Supabase (postgres.js) transaction
-        await sql.begin(async sql => {
-            for (const line of lines) {
-                for (const item of items) {
-                    if (line.includes(item.name)) {
-                        // Found a match!
-                        const priceMatch = line.match(/(\d{1,3}(,\d{3})*)/);
-                        const price = priceMatch ? parseInt(priceMatch[0].replace(/,/g, ''), 10) : 0;
+        // Markdownコードブロック除去
+        const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-                        // Update inventory
-                        const newQuantity = item.quantity + 1;
-                        await sql`UPDATE items SET quantity = ${newQuantity} WHERE id = ${item.id}`;
+        let items = [];
+        try {
+            items = JSON.parse(jsonStr);
+        } catch (e) {
+            console.error('JSON Parse Error:', responseText);
+            return NextResponse.json({ success: false, error: 'AIの応答を解析できませんでした' }, { status: 500 });
+        }
 
-                        // Record history
-                        await sql`
-              INSERT INTO history (item_id, quantity_change, cost, type)
-              VALUES (${item.id}, 1, ${price}, 'purchase')
-            `;
-
-                        matches.push({ name: item.name, price });
-                        totalCost += price;
-                        // Break inner loop (items) to match next line. 
-                        // Note: This logic assumes one item per line, or first match wins.
-                        break;
-                    }
-                }
-            }
-        });
-
-        return NextResponse.json({ success: true, matches, total: totalCost });
+        return NextResponse.json({ success: true, items });
 
     } catch (error) {
-        console.error('OCR Error:', error);
+        console.error('Scan Error:', error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
