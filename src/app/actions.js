@@ -11,23 +11,26 @@ export async function addItem(formData) {
     const name = formData.get('name');
     const category = formData.get('category');
     const quantity = parseInt(formData.get('quantity') || '0', 10);
-    const unit = formData.get('unit');
     const threshold = parseInt(formData.get('threshold') || '1', 10);
 
+    // Initial prediction: 1 month from now
     await sql`
-    INSERT INTO items (name, category, quantity, unit, threshold)
-    VALUES (${name}, ${category}, ${quantity}, ${unit}, ${threshold})
+    INSERT INTO items (name, category, quantity, threshold, predicted_next_purchase)
+    VALUES (${name}, ${category}, ${quantity}, ${threshold}, NOW() + INTERVAL '1 month')
   `;
 
     revalidatePath('/');
 }
 
-export async function updateItem(id, data) {
-    const { name, category, quantity, unit, threshold } = data;
+export async function updateItem(id, formData) {
+    const name = formData.get('name');
+    const category = formData.get('category');
+    const quantity = parseInt(formData.get('quantity') || '0', 10);
+    const threshold = parseInt(formData.get('threshold') || '1', 10);
 
     await sql`
     UPDATE items 
-    SET name = ${name}, category = ${category}, quantity = ${quantity}, unit = ${unit}, threshold = ${threshold}
+    SET name = ${name}, category = ${category}, quantity = ${quantity}, threshold = ${threshold}
     WHERE id = ${id}
   `;
 

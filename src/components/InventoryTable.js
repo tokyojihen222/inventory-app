@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styles from './InventoryTable.module.css';
 import { updateInventory } from '@/app/actions';
 
-export default function InventoryTable({ initialItems }) {
+export default function InventoryTable({ initialItems, onEdit, onDelete }) {
     const [items, setItems] = useState(initialItems);
     const [search, setSearch] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: 'category', direction: 'asc' });
@@ -61,7 +61,6 @@ export default function InventoryTable({ initialItems }) {
                         <th onClick={() => handleSort('name')}>商品名</th>
                         <th onClick={() => handleSort('category')}>カテゴリ</th>
                         <th onClick={() => handleSort('quantity')}>在庫数</th>
-                        <th>単位</th>
                         <th>次回購入予測</th>
                         <th>操作</th>
                     </tr>
@@ -74,7 +73,6 @@ export default function InventoryTable({ initialItems }) {
                             <td className={item.quantity <= item.threshold ? styles.lowStock : ''}>
                                 {item.quantity}
                             </td>
-                            <td>{item.unit}</td>
                             <td>
                                 {item.predicted_next_purchase ? (
                                     <span title={new Date(item.predicted_next_purchase).toLocaleDateString()}>
@@ -85,6 +83,8 @@ export default function InventoryTable({ initialItems }) {
                             <td className={styles.actions}>
                                 <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => handleDecrement(item.id)}>-</button>
                                 <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => handleIncrement(item.id)}>+</button>
+                                <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnEdit}`} onClick={() => onEdit(item)}>✏️</button>
+                                <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnDelete}`} onClick={() => onDelete(item.id)}>🗑️</button>
                             </td>
                         </tr>
                     ))}

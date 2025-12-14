@@ -78,3 +78,17 @@
     color: var(--danger);
     font-weight: bold;
 }
+
+.btnEdit:hover {
+    background-color: #3b82f6;
+    /* Blue */
+    border-color: #3b82f6;
+    color: white;
+}
+
+.btnDelete:hover {
+    background-color: #ef4444;
+    /* Red */
+    border-color: #ef4444;
+    color: white;
+}
