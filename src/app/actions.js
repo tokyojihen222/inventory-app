@@ -104,11 +104,11 @@ export async function deleteItem(id) {
 }
 
 export async function updateInventory(id, change, type = 'adjustment') {
-    // Use a transaction
-    await sql.begin(async sql => {
+    try {
+        // トランザクション（sql.begin）はSupabase Transaction Poolerと相性が悪いため削除
         // 1. Get current item
-        const [item] = await sql`SELECT * FROM items WHERE id = ${id}`;
-        if (!item) return;
+        const [item] = await sql`SELECT quantity FROM items WHERE id = ${id}`;
+        if (!item) return { success: false, error: 'Item not found' };
 
         const newQuantity = item.quantity + change;
 
@@ -117,23 +117,24 @@ export async function updateInventory(id, change, type = 'adjustment') {
 
         // 3. Record history
         await sql`
-      INSERT INTO history (item_id, quantity_change, type)
-      VALUES (${id}, ${change}, ${type})
-    `;
-    });
+            INSERT INTO history (item_id, quantity_change, type)
+            VALUES (${id}, ${change}, ${type})
+        `;
 
-    // Calculate prediction outside transaction (optional)
-    if (type === 'purchase') {
-        const { calculatePrediction } = await import('@/lib/analytics');
-        // Prediction logic might need update if it relied on DB synchronous calls, 
-        // but calculatePrediction seems to take just an ID. 
-        // Let's check analytics.js next.
-        // Assuming calculatePrediction needs to be async or we pass the data.
-        // For now, let's call it.
-        await updatePrediction(id);
+        // Calculate prediction (optional)
+        if (type === 'purchase') {
+            await updatePrediction(id);
+        }
+
+        revalidatePath('/');
+        return { success: true };
+    } catch (e) {
+        console.error('Failed to update inventory:', e);
+        // エラーをthrowするとNext.jsのエラー画面になるため、オブジェクトで返すのが理想だが
+        // 現状の呼び出し元（InventoryTable）が対応していないためthrowする。
+        // ただし、呼び出し元でこれをcatchしてalertする。
+        throw new Error(`在庫更新エラー: ${e.message}`);
     }
-
-    revalidatePath('/');
 }
 
 // Helper to handle prediction update which might need DB access

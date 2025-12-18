@@ -37,11 +37,19 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
     });
 
     const handleIncrement = async (id) => {
-        await updateInventory(id, 1, 'purchase');
+        try {
+            await updateInventory(id, 1, 'purchase');
+        } catch (e) {
+            alert(e.message);
+        }
     };
 
     const handleDecrement = async (id) => {
-        await updateInventory(id, -1, 'consume');
+        try {
+            await updateInventory(id, -1, 'consume');
+        } catch (e) {
+            alert(e.message);
+        }
     };
 
     return (
@@ -75,18 +83,13 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
 
                             <td className={styles.td} data-label="在庫数">
                                 <div className={styles.quantityControl}>
-                                    <form action={async () => {
-                                        const newQuantity = Math.max(0, item.quantity - 1);
-                                        await updateInventory(item.id, -1, 'consumption');
-                                    }}>
+                                    <form action={() => handleDecrement(item.id)}>
                                         <button type="submit" className={`${styles.btnQuantity} ${styles.btnMinus}`} disabled={item.quantity <= 0}>-</button>
                                     </form>
                                     <span className={`${styles.quantityValue} ${item.quantity <= (item.threshold || 1) ? styles.lowStock : ''}`}>
                                         {item.quantity}
                                     </span>
-                                    <form action={async () => {
-                                        await updateInventory(item.id, 1, 'purchase');
-                                    }}>
+                                    <form action={() => handleIncrement(item.id)}>
                                         <button type="submit" className={`${styles.btnQuantity} ${styles.btnPlus}`}>+</button>
                                     </form>
                                 </div>
