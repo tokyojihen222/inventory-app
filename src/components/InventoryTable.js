@@ -58,38 +58,54 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th onClick={() => handleSort('name')}>商品名</th>
-                        <th onClick={() => handleSort('category')}>カテゴリ</th>
-                        <th onClick={() => handleSort('quantity')}>在庫数</th>
-                        <th>次回購入予測</th>
-                        <th>操作</th>
+                        <th className={styles.th}>商品名</th>
+                        <th className={styles.th}>カテゴリ</th>
+                        <th className={styles.th} style={{ width: '80px' }}>在庫数</th>
+                        <th className={styles.th} style={{ width: '60px' }}>単位</th>
+                        <th className={styles.th}>前回価格</th>
+                        <th className={styles.th}>消費予測</th>
+                        <th className={styles.th}>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {sortedItems.map((item) => (
                         <tr key={item.id}>
-                            <td data-label="商品名">{item.name}</td>
-                            <td data-label="カテゴリ">{item.category}</td>
-                            <td data-label="在庫数" className={item.quantity <= item.threshold ? styles.lowStock : ''}>
-                                {item.quantity}
-                            </td>
-                            <td data-label="次回購入予測">
-                                {item.predicted_next_purchase ? (
-                                    <span title={new Date(item.predicted_next_purchase).toLocaleDateString()}>
-                                        {new Date(item.predicted_next_purchase).toLocaleDateString()}
+                            <td className={styles.td} data-label="商品名">{item.name}</td>
+                            <td className={styles.td} data-label="カテゴリ">{item.category}</td>
+
+                            <td className={styles.td} data-label="在庫数">
+                                <div className={styles.quantityControl}>
+                                    <form action={async () => {
+                                        const newQuantity = Math.max(0, item.quantity - 1);
+                                        await updateInventory(item.id, -1, 'consumption');
+                                    }}>
+                                        <button type="submit" className={`${styles.btnQuantity} ${styles.btnMinus}`} disabled={item.quantity <= 0}>-</button>
+                                    </form>
+                                    <span className={`${styles.quantityValue} ${item.quantity <= (item.threshold || 1) ? styles.lowStock : ''}`}>
+                                        {item.quantity}
                                     </span>
-                                ) : '-'}
+                                    <form action={async () => {
+                                        await updateInventory(item.id, 1, 'purchase');
+                                    }}>
+                                        <button type="submit" className={`${styles.btnQuantity} ${styles.btnPlus}`}>+</button>
+                                    </form>
+                                </div>
                             </td>
-                            <td className={styles.actions}>
-                                <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => handleDecrement(item.id)}>-</button>
-                                <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => handleIncrement(item.id)}>+</button>
-                                <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnEdit}`} onClick={() => onEdit(item)}>✏️</button>
-                                <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnDelete}`} onClick={() => onDelete(item.id)}>🗑️</button>
+                            <td className={styles.td} data-label="単位">{item.unit || '個'}</td>
+                            <td className={styles.td} data-label="前回価格">{item.last_purchase_price ? `¥${item.last_purchase_price}` : '-'}</td>
+                            <td className={styles.td} data-label="消費予測">
+                                {item.predicted_next_purchase ? new Date(item.predicted_next_purchase).toLocaleDateString() : 'データ不足'}
+                            </td>
+                            <td className={styles.td} data-label="操作">
+                                <div className={styles.actionButtons}>
+                                    <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => onEdit(item)}>✏️</button>
+                                    <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnDelete}`} onClick={() => onDelete(item.id)}>🗑️</button>
+                                </div>
                             </td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
-        </div>
+            </table >
+        </div >
     );
 }

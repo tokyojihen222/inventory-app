@@ -53,9 +53,30 @@ export default function AddItemModal({ isOpen, onClose, editItem = null }) {
 
                     <div className={styles.field}>
                         <label className={styles.label} htmlFor="quantity">現在庫数</label>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input
+                                type="number" id="quantity" name="quantity" min="0"
+                                defaultValue={editItem?.quantity || '1'}
+                                style={{ flex: 1 }}
+                            />
+                            <select
+                                name="unit"
+                                id="unit"
+                                defaultValue={editItem?.unit || '個'}
+                                style={{ flex: 0.5, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                            >
+                                <option value="個">個</option>
+                                <option value="パック">パック</option>
+                                <option value="ケース">ケース</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className={styles.field}>
+                        <label className={styles.label} htmlFor="last_purchase_price">前回購入金額 (円)</label>
                         <input
-                            type="number" id="quantity" name="quantity" min="0"
-                            defaultValue={editItem?.quantity || '1'}
+                            type="number" id="last_purchase_price" name="last_purchase_price" min="0" placeholder="不明"
+                            defaultValue={editItem?.last_purchase_price || ''}
                         />
                     </div>
 

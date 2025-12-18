@@ -21,7 +21,9 @@ export async function bulkAddItems(items) {
                 name: item.name,
                 category: item.category || '未分類',
                 quantity: item.quantity || 1,
-                threshold: 1
+                threshold: 1,
+                unit: item.unit || '個',
+                last_purchase_price: item.last_purchase_price || null
             });
 
             // 既存の商品があるか名前で検索
@@ -30,11 +32,17 @@ export async function bulkAddItems(items) {
             if (existing) {
                 // 更新
                 await updateInventory(existing.id, data.quantity, 'purchase');
+                // 価格と単位も更新
+                await sql`
+                    UPDATE items 
+                    SET unit = ${data.unit}, last_purchase_price = ${data.last_purchase_price}
+                    WHERE id = ${existing.id}
+                `;
             } else {
                 // 新規作成
                 await sql`
-                    INSERT INTO items (name, category, quantity, threshold, predicted_next_purchase)
-                    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, NOW() + INTERVAL '1 month')
+                    INSERT INTO items (name, category, quantity, threshold, unit, last_purchase_price, predicted_next_purchase)
+                    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, ${data.unit}, ${data.last_purchase_price}, NOW() + INTERVAL '1 month')
                 `;
             }
             count++;
@@ -53,6 +61,8 @@ export async function addItem(formData) {
         category: formData.get('category'),
         quantity: formData.get('quantity'),
         threshold: formData.get('threshold'),
+        unit: formData.get('unit'),
+        last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
     };
 
     // Validate data - will throw error if invalid (caught by Next.js error boundary)
@@ -60,8 +70,8 @@ export async function addItem(formData) {
 
     // Initial prediction: 1 month from now
     await sql`
-    INSERT INTO items (name, category, quantity, threshold, predicted_next_purchase)
-    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, NOW() + INTERVAL '1 month')
+    INSERT INTO items (name, category, quantity, threshold, unit, last_purchase_price, predicted_next_purchase)
+    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, ${data.unit}, ${data.last_purchase_price}, NOW() + INTERVAL '1 month')
   `;
 
     revalidatePath('/');
@@ -73,13 +83,15 @@ export async function updateItem(id, formData) {
         category: formData.get('category'),
         quantity: formData.get('quantity'),
         threshold: formData.get('threshold'),
+        unit: formData.get('unit'),
+        last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
     };
 
     const data = itemSchema.parse(rawData);
 
     await sql`
     UPDATE items 
-    SET name = ${data.name}, category = ${data.category}, quantity = ${data.quantity}, threshold = ${data.threshold}
+    SET name = ${data.name}, category = ${data.category}, quantity = ${data.quantity}, threshold = ${data.threshold}, unit = ${data.unit}, last_purchase_price = ${data.last_purchase_price}
     WHERE id = ${id}
   `;
 

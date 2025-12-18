@@ -135,7 +135,6 @@ export default function ReceiptScanner({ onScanComplete }) {
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept="image/*" // Allow selection of any image file
-                capture="environment" // Hint to open rear camera on mobile
                 onChange={handleFileChange}
             />
 
