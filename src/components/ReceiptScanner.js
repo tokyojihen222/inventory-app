@@ -110,17 +110,15 @@ export default function ReceiptScanner({ onScanComplete }) {
 
     return (
         <>
-            {/* 1. Floating Action Button */}
-            <div className={styles.fabContainer}>
-                <span className={styles.fabLabel}>レシートをスキャン</span>
-                <button
-                    className={styles.fabBtn}
-                    onClick={handleFabClick}
-                    title="レシートをスキャン"
-                >
-                    📷
-                </button>
-            </div>
+            {/* 1. Scan Button (Header placement) */}
+            <button
+                className={styles.scanBtn}
+                onClick={handleFabClick}
+                title="レシートをスキャン"
+            >
+                <span className={styles.icon}>📷</span>
+                レシート読取
+            </button>
 
             {/* 2. Preparation / Processing Modal */}
             {showPrepModal && (
@@ -138,7 +136,7 @@ export default function ReceiptScanner({ onScanComplete }) {
                             <>
                                 <div className={styles.processingText}>レシート解析中...</div>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                                    猫が一生懸命読んでいます🐾
+                                    取り込み中...
                                 </p>
                                 <div className={styles.progressBar}>
                                     <div className={styles.progressFill}></div>

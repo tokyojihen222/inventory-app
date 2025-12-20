@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(10, 10, 15, 0.9);
+    background: rgba(10, 10, 15, 0.95);
     backdrop-filter: blur(12px);
     display: flex;
     justify-content: center;
@@ -15,9 +15,9 @@
 }
 
 .modal {
-    background: rgba(19, 19, 31, 0.95);
+    background: #13131f;
     border: 1px solid var(--primary);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(139, 92, 246, 0.2);
     border-radius: var(--radius);
     width: 95%;
     max-width: 800px;
