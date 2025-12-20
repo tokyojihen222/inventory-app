@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './ReceiptScanner.module.css';
 import ReceiptReviewModal from './ReceiptReviewModal';
 
@@ -13,6 +14,12 @@ export default function ReceiptScanner({ onScanComplete }) {
     const [scannedItems, setScannedItems] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const fileInputRef = useRef(null);
+
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const resizeImage = (file) => {
         return new Promise((resolve) => {
@@ -108,6 +115,12 @@ export default function ReceiptScanner({ onScanComplete }) {
         fileInputRef.current?.click();
     };
 
+    // Portal helper to safely render to body
+    const Portal = ({ children }) => {
+        if (!mounted) return null;
+        return createPortal(children, document.body);
+    };
+
     return (
         <>
             {/* 1. Scan Button (Header placement) */}
@@ -120,50 +133,52 @@ export default function ReceiptScanner({ onScanComplete }) {
                 レシート読取
             </button>
 
-            {/* 2. Preparation / Processing Modal */}
+            {/* 2. Preparation / Processing Modal - Rendered via Portal */}
             {showPrepModal && (
-                <div className={styles.overlay} onClick={() => !isScanning && setShowPrepModal(false)}>
-                    <div className={`${styles.modal} ${isScanning ? styles.processing : ''}`} onClick={e => e.stopPropagation()}>
-                        {!isScanning && (
-                            <button className={styles.closeBtn} onClick={() => setShowPrepModal(false)}>×</button>
-                        )}
+                <Portal>
+                    <div className={styles.overlay} onClick={() => !isScanning && setShowPrepModal(false)}>
+                        <div className={`${styles.modal} ${isScanning ? styles.processing : ''}`} onClick={e => e.stopPropagation()}>
+                            {!isScanning && (
+                                <button className={styles.closeBtn} onClick={() => setShowPrepModal(false)}>×</button>
+                            )}
 
-                        <div className={styles.scanIcon}>
-                            {isScanning ? '🐈' : '📷'}
-                        </div>
+                            <div className={styles.scanIcon}>
+                                {isScanning ? '🐈' : '📷'}
+                            </div>
 
-                        {isScanning ? (
-                            <>
-                                <div className={styles.processingText}>レシート解析中...</div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                                    取り込み中...
-                                </p>
-                                <div className={styles.progressBar}>
-                                    <div className={styles.progressFill}></div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>レシートを追加</h3>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                    写真をとるか、ライブラリから選択してください
-                                </p>
-
-                                {errorMsg && (
-                                    <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', borderRadius: '8px', fontSize: '0.9rem' }}>
-                                        {errorMsg}
+                            {isScanning ? (
+                                <>
+                                    <div className={styles.processingText}>レシート解析中...</div>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                                        取り込み中...
+                                    </p>
+                                    <div className={styles.progressBar}>
+                                        <div className={styles.progressFill}></div>
                                     </div>
-                                )}
+                                </>
+                            ) : (
+                                <>
+                                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>レシートを追加</h3>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                        写真をとるか、ライブラリから選択してください
+                                    </p>
 
-                                <div className={styles.btnGroup}>
-                                    <button className={styles.actionBtn} onClick={triggerFileSelect}>
-                                        <span>📂</span> 画像を選択 / カメラ起動
-                                    </button>
-                                </div>
-                            </>
-                        )}
+                                    {errorMsg && (
+                                        <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', borderRadius: '8px', fontSize: '0.9rem' }}>
+                                            {errorMsg}
+                                        </div>
+                                    )}
+
+                                    <div className={styles.btnGroup}>
+                                        <button className={styles.actionBtn} onClick={triggerFileSelect}>
+                                            <span>📂</span> 画像を選択 / カメラ起動
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </Portal>
             )}
 
             {/* Hidden Input */}
@@ -175,12 +190,16 @@ export default function ReceiptScanner({ onScanComplete }) {
                 onChange={handleFileChange}
             />
 
-            {/* 3. Review Modal */}
-            <ReceiptReviewModal
-                isOpen={showReview}
-                onClose={() => setShowReview(false)}
-                scannedItems={scannedItems}
-            />
+            {/* 3. Review Modal - Rendered via Portal */}
+            {showReview && (
+                <Portal>
+                    <ReceiptReviewModal
+                        isOpen={showReview}
+                        onClose={() => setShowReview(false)}
+                        scannedItems={scannedItems}
+                    />
+                </Portal>
+            )}
         </>
     );
 }
