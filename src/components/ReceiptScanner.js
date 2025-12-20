@@ -4,9 +4,7 @@ import { useState, useRef } from 'react';
 import styles from './ReceiptScanner.module.css';
 import ReceiptReviewModal from './ReceiptReviewModal';
 
-import { useState, useRef } from 'react';
-import styles from './ReceiptScanner.module.css';
-import ReceiptReviewModal from './ReceiptReviewModal';
+
 
 export default function ReceiptScanner({ onScanComplete }) {
     const [isScanning, setIsScanning] = useState(false);
