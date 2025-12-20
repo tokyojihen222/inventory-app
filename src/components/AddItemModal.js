@@ -8,12 +8,16 @@ export default function AddItemModal({ isOpen, onClose, editItem = null }) {
     if (!isOpen) return null;
 
     const handleSubmit = async (formData) => {
-        if (editItem) {
-            await updateItem(editItem.id, formData);
-        } else {
-            await addItem(formData);
+        try {
+            if (editItem) {
+                await updateItem(editItem.id, formData);
+            } else {
+                await addItem(formData);
+            }
+            onClose();
+        } catch (e) {
+            alert(e.message);
         }
-        onClose();
     };
 
     // Import updateItem here or ensure it's imported at top level

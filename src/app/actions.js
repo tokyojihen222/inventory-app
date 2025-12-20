@@ -56,46 +56,54 @@ export async function bulkAddItems(items) {
 }
 
 export async function addItem(formData) {
-    const rawData = {
-        name: formData.get('name'),
-        category: formData.get('category'),
-        quantity: formData.get('quantity'),
-        threshold: formData.get('threshold'),
-        unit: formData.get('unit'),
-        last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
-    };
+    try {
+        const rawData = {
+            name: formData.get('name'),
+            category: formData.get('category'),
+            quantity: formData.get('quantity'),
+            threshold: formData.get('threshold'),
+            unit: formData.get('unit'),
+            last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
+        };
 
-    // Validate data - will throw error if invalid (caught by Next.js error boundary)
-    const data = itemSchema.parse(rawData);
+        const data = itemSchema.parse(rawData);
 
-    // Initial prediction: 1 month from now
-    await sql`
-    INSERT INTO items (name, category, quantity, threshold, unit, last_purchase_price, predicted_next_purchase)
-    VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, ${data.unit}, ${data.last_purchase_price}, NOW() + INTERVAL '1 month')
-  `;
+        await sql`
+            INSERT INTO items (name, category, quantity, threshold, unit, last_purchase_price, predicted_next_purchase)
+            VALUES (${data.name}, ${data.category}, ${data.quantity}, ${data.threshold}, ${data.unit}, ${data.last_purchase_price}, NOW() + INTERVAL '1 month')
+        `;
 
-    revalidatePath('/');
+        revalidatePath('/');
+    } catch (e) {
+        console.error('Failed to add item:', e);
+        throw new Error(e.message || '商品の追加に失敗しました');
+    }
 }
 
 export async function updateItem(id, formData) {
-    const rawData = {
-        name: formData.get('name'),
-        category: formData.get('category'),
-        quantity: formData.get('quantity'),
-        threshold: formData.get('threshold'),
-        unit: formData.get('unit'),
-        last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
-    };
+    try {
+        const rawData = {
+            name: formData.get('name'),
+            category: formData.get('category'),
+            quantity: formData.get('quantity'),
+            threshold: formData.get('threshold'),
+            unit: formData.get('unit'),
+            last_purchase_price: formData.get('last_purchase_price') ? Number(formData.get('last_purchase_price')) : null,
+        };
 
-    const data = itemSchema.parse(rawData);
+        const data = itemSchema.parse(rawData);
 
-    await sql`
-    UPDATE items 
-    SET name = ${data.name}, category = ${data.category}, quantity = ${data.quantity}, threshold = ${data.threshold}, unit = ${data.unit}, last_purchase_price = ${data.last_purchase_price}
-    WHERE id = ${id}
-  `;
+        await sql`
+            UPDATE items 
+            SET name = ${data.name}, category = ${data.category}, quantity = ${data.quantity}, threshold = ${data.threshold}, unit = ${data.unit}, last_purchase_price = ${data.last_purchase_price}
+            WHERE id = ${id}
+        `;
 
-    revalidatePath('/');
+        revalidatePath('/');
+    } catch (e) {
+        console.error('Failed to update item:', e);
+        throw new Error(e.message || '商品の更新に失敗しました');
+    }
 }
 
 export async function deleteItem(id) {
