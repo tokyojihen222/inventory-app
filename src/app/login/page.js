@@ -15,10 +15,14 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
+            const redirectTo = process.env.NODE_ENV === 'development'
+                ? 'http://localhost:3000/auth/callback'
+                : 'https://neko-pj-kura-2025.vercel.app/auth/callback';
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo,
                 },
             });
             if (error) throw error;
