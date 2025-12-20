@@ -1,0 +1,180 @@
+.container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search {
+    flex: 1;
+    min-width: 200px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.table th {
+    background-color: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    color: var(--secondary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: transparent;
+    color: var(--foreground);
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btnIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+}
+
+.lowStock {
+    color: var(--danger);
+    font-weight: bold;
+}
+
+.btnEdit:hover {
+    background-color: #3b82f6;
+    /* Blue */
+    border-color: #3b82f6;
+    color: white;
+}
+
+.btnDelete:hover {
+    background-color: #ef4444;
+    /* Red */
+    border-color: #ef4444;
+    color: white;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        border: none;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .table thead {
+        display: none;
+        /* Hide headers */
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 1rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .table td {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+    }
+
+    .table td:last-child {
+        border-bottom: none;
+        padding-top: 1rem;
+        justify-content: flex-end;
+    }
+
+    /* Add labels using pseudoelements or just rely on layout */
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--secondary);
+        font-size: 0.875rem;
+        text-align: left;
+        margin-right: 1rem;
+    }
+
+    /* Specific adjustments for actions column */
+    .actions {
+        width: 100%;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btnIcon {
+        width: 2.5rem;
+        /* Larger touch target */
+        height: 2.5rem;
+        font-size: 1.25rem;
+    }
+}
+
+.spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
