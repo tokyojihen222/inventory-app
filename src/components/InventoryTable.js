@@ -79,7 +79,9 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
                     {sortedItems.map((item) => (
                         <tr key={item.id}>
                             <td className={styles.td} data-label="商品名">{item.name}</td>
-                            <td className={styles.td} data-label="カテゴリ">{item.category}</td>
+                            <td className={styles.td} data-label="カテゴリ">
+                                <span className={styles.categoryBadge}>{item.category}</span>
+                            </td>
 
                             <td className={styles.td} data-label="在庫数">
                                 <div className={styles.quantityControl}>
@@ -101,8 +103,8 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
                             </td>
                             <td className={styles.td} data-label="操作">
                                 <div className={styles.actionButtons}>
-                                    <button className={`${styles.btn} ${styles.btnIcon}`} onClick={() => onEdit(item)}>✏️</button>
-                                    <button className={`${styles.btn} ${styles.btnIcon} ${styles.btnDelete}`} onClick={() => onDelete(item.id)}>🗑️</button>
+                                    <button className={styles.btnAction} onClick={() => onEdit(item)} title="編集">✏️</button>
+                                    <button className={`${styles.btnAction} ${styles.btnDelete}`} onClick={() => onDelete(item.id)} title="削除">🗑️</button>
                                 </div>
                             </td>
                         </tr>

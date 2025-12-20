@@ -4,7 +4,7 @@ import { useState } from 'react';
 import InventoryTable from './InventoryTable';
 import AddItemModal from './AddItemModal';
 import ReceiptScanner from './ReceiptScanner';
-import styles from './InventoryTable.module.css';
+import styles from './InventoryView.module.css';
 import { logout } from '@/app/auth-actions';
 
 export default function InventoryView({ initialItems }) {
@@ -35,43 +35,46 @@ export default function InventoryView({ initialItems }) {
         : initialItems.filter(item => item.category === activeCategory);
 
     return (
-        <main className={styles.mainContainer} style={{ padding: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
-            <div className={styles.header} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                <h1 style={{ fontSize: '1.5rem', margin: 0 }}>在庫管理</h1>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <button
-                        onClick={() => logout()}
-                        className={styles.btn}
-                        style={{ fontSize: '0.75rem', padding: '0.5rem' }}
-                    >
-                        ログアウト
-                    </button>
+        <main className={styles.mainContainer}>
+            <div className={styles.header}>
+                <div className={styles.brand}>
+                    <svg className={styles.catLogo} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor" opacity="0.1" />
+                        <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <circle cx="9" cy="10" r="1.5" fill="currentColor" />
+                        <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+                        <path d="M10 14C10 14 11 15 12 15C13 15 14 14 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M4 8L3 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M20 8L21 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                    <h1 className={styles.title}>Cosmic Inventory</h1>
+                </div>
+
+                <div className={styles.controls}>
                     <ReceiptScanner onScanComplete={() => window.location.reload()} />
                     <button
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none', whiteSpace: 'nowrap' }}
                         onClick={handleAdd}
+                        className={styles.btnAdd}
                     >
-                        + 追加
+                        <span>+</span>
+                        <span>追加</span>
+                    </button>
+                    <button
+                        onClick={() => logout()}
+                        className={styles.btnLogout}
+                    >
+                        ログアウト
                     </button>
                 </div>
             </div>
 
             {/* Category Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            <div className={styles.categoryTabs}>
                 {categories.map(cat => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
-                        style={{
-                            padding: '0.5rem 1rem',
-                            borderRadius: '20px',
-                            border: '1px solid var(--border)',
-                            background: activeCategory === cat ? 'var(--primary)' : 'var(--card-bg)',
-                            color: activeCategory === cat ? 'white' : 'var(--text)',
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap'
-                        }}
+                        className={`${styles.tab} ${activeCategory === cat ? styles.tabActive : ''}`}
                     >
                         {cat}
                     </button>

@@ -1,109 +1,192 @@
 .container {
     width: 100%;
     overflow-x: auto;
-    background-color: var(--card-bg);
+    background: transparent;
     border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* box-shadow is handled by individual cards/rows in modern design */
 }
 
 .controls {
     display: flex;
     justify-content: space-between;
-    padding: 1rem;
+    align-items: center;
+    padding: 0 0 1.5rem 0;
     gap: 1rem;
     flex-wrap: wrap;
 }
 
 .search {
     flex: 1;
-    min-width: 200px;
+    min-width: 250px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.search:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 1px var(--primary);
+    border-color: var(--primary);
 }
 
 .table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    /* Spacing between rows for card effect */
     text-align: left;
 }
 
-.table th,
-.table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
 .table th {
-    background-color: rgba(255, 255, 255, 0.05);
-    font-weight: 600;
-    color: var(--secondary);
-    text-transform: uppercase;
+    padding: 1rem 1.5rem;
+    color: var(--text-muted);
     font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
 }
 
-.table tr:last-child td {
-    border-bottom: none;
-}
-
-.actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.btn {
-    padding: 0.25rem 0.5rem;
+.table tbody tr {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background-color: transparent;
-    color: var(--foreground);
-    transition: all 0.2s;
+    /* Create borders for tr using box-shadow to allow border-radius on tr */
+    box-shadow: 0 0 0 1px var(--border);
 }
 
-.btn:hover {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
+.table tbody tr:hover {
+    transform: translateY(-2px) scale(1.005);
+    background: rgba(30, 41, 59, 0.7);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--primary-glow);
+    z-index: 10;
+    position: relative;
 }
 
-.btnIcon {
+.table td {
+    padding: 1.25rem 1.5rem;
+    border: none;
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+/* Rounded corners for the rows */
+.table td:first-child {
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+}
+
+.table td:last-child {
+    border-top-right-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+}
+
+.quantityControl {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.25rem;
+    border-radius: 9999px;
+    /* Pill shape */
+    width: fit-content;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btnQuantity {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.btnMinus:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btnPlus:hover {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.btnQuantity:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.quantityValue {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    min-width: 1.5rem;
+    text-align: center;
 }
 
 .lowStock {
     color: var(--danger);
-    font-weight: bold;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
-.btnEdit:hover {
-    background-color: #3b82f6;
-    /* Blue */
-    border-color: #3b82f6;
-    color: white;
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btnAction {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.btnAction:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-main);
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
 }
 
 .btnDelete:hover {
-    background-color: #ef4444;
-    /* Red */
-    border-color: #ef4444;
-    color: white;
+    border-color: var(--danger);
+    color: var(--danger);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
 }
 
-/* Mobile Responsive Styles */
-@media (max-width: 768px) {
-    .container {
-        border: none;
-        box-shadow: none;
-        background: transparent;
-    }
+/* Category Badge */
+.categoryBadge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
+/* Mobile Responsive */
+@media (max-width: 768px) {
     .table thead {
         display: none;
-        /* Hide headers */
     }
 
     .table,
@@ -116,65 +199,45 @@
 
     .table tr {
         margin-bottom: 1rem;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
         border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1.25rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        box-shadow: none;
+    }
+
+    .table tr:hover {
+        transform: none;
     }
 
     .table td {
         padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        text-align: right;
+        border: none;
+    }
+
+    .table td:first-child {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.75rem;
+    }
+
+    /* Headers for mobile data */
+    .table td:not(:first-child)::before {
+        content: attr(data-label);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
     }
 
     .table td:last-child {
-        border-bottom: none;
+        margin-top: 1rem;
         padding-top: 1rem;
+        border-top: 1px solid var(--border);
         justify-content: flex-end;
-    }
-
-    /* Add labels using pseudoelements or just rely on layout */
-    .table td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: var(--secondary);
-        font-size: 0.875rem;
-        text-align: left;
-        margin-right: 1rem;
-    }
-
-    /* Specific adjustments for actions column */
-    .actions {
-        width: 100%;
-        justify-content: flex-end;
-        gap: 1rem;
-    }
-
-    .btnIcon {
-        width: 2.5rem;
-        /* Larger touch target */
-        height: 2.5rem;
-        font-size: 1.25rem;
-    }
-}
-
-.spinner {
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 1s ease-in-out infinite;
-    display: inline-block;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
     }
 }
