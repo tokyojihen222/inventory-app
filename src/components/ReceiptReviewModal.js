@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import styles from './AddItemModal.module.css'; // Reuse modal styles
+import styles from './ReceiptReviewModal.module.css'; // Reuse modal styles
 import { bulkAddItems } from '@/app/actions';
 
 export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
@@ -94,90 +94,81 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
     };
 
     const renderList = (listType, listItems) => (
-        <div style={{ overflowY: 'auto', flex: 1, padding: '0.5rem 0' }}>
+        <div className={styles.content}>
             {listItems.length === 0 && (
-                <p style={{ textAlign: 'center', color: '#888', padding: '2rem' }}>
-                    {listType === 'register' ? '登録するアイテムはありません' : '除外されたアイテムはありません'}
-                </p>
+                <div className={styles.emptyState}>
+                    <p>{listType === 'register' ? '登録するアイテムはありません' : '除外されたアイテムはありません'}</p>
+                </div>
             )}
             {listItems.map((item, index) => (
-                <div key={index} style={{
-                    background: 'var(--card-bg)',
-                    border: '1px solid var(--border)',
-                    borderRadius: '8px',
-                    padding: '1rem',
-                    marginBottom: '1rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.5rem'
-                }}>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>商品名</label>
+                <div key={index} className={styles.itemCard}>
+                    <div className={styles.row}>
+                        <div className={styles.col} style={{ flex: 1 }}>
+                            <label className={styles.label}>商品名</label>
                             <input
                                 type="text"
                                 value={item.name}
+                                className={styles.input}
                                 onChange={(e) => handleItemChange(listType, index, 'name', e.target.value)}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
                             />
                         </div>
-                        <div style={{ width: '100px' }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>カテゴリ</label>
+                        <div className={styles.col} style={{ width: '120px' }}>
+                            <label className={styles.label}>カテゴリ</label>
                             <input
                                 type="text"
                                 value={item.category}
                                 list="categories"
+                                className={styles.input}
                                 onChange={(e) => handleItemChange(listType, index, 'category', e.target.value)}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
                             />
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-                        <div style={{ width: '60px' }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>個数</label>
+                    <div className={styles.row}>
+                        <div className={styles.col} style={{ width: '80px' }}>
+                            <label className={styles.label}>個数</label>
                             <input
                                 type="number"
                                 value={item.quantity}
                                 min="1"
+                                className={styles.input}
                                 onChange={(e) => handleItemChange(listType, index, 'quantity', e.target.value)}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
                             />
                         </div>
-                        <div style={{ width: '80px' }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>単位</label>
+                        <div className={styles.col} style={{ width: '100px' }}>
+                            <label className={styles.label}>単位</label>
                             <select
                                 value={item.unit || '個'}
+                                className={styles.input}
                                 onChange={(e) => handleItemChange(listType, index, 'unit', e.target.value)}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
                             >
                                 <option value="個">個</option>
                                 <option value="パック">パック</option>
                                 <option value="ケース">ケース</option>
                             </select>
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>金額(円)</label>
+                        <div className={styles.col} style={{ flex: 1 }}>
+                            <label className={styles.label}>金額(円)</label>
                             <input
                                 type="number"
                                 value={item.price}
                                 placeholder="金額"
+                                className={styles.input}
                                 onChange={(e) => handleItemChange(listType, index, 'price', e.target.value)}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
                             />
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', alignItems: 'center' }}>
                         <button
                             onClick={() => handleDelete(listType, index)}
-                            style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '4px' }}
+                            className={styles.btnDelete}
                         >
                             削除
                         </button>
                         <button
                             onClick={() => handleMove(listType, index)}
-                            style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px' }}
+                            className={styles.btnMove}
                         >
                             {listType === 'register' ? '除外へ移動 👇' : '登録へ移動 👆'}
                         </button>
@@ -188,50 +179,39 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
                 onClick={handleAddRow}
                 style={{
                     width: '100%',
-                    padding: '0.75rem',
+                    padding: '1rem',
                     border: '1px dashed var(--border)',
-                    background: 'transparent',
+                    background: 'rgba(255,255,255,0.02)',
                     color: 'var(--secondary)',
-                    borderRadius: '8px',
-                    cursor: 'pointer'
+                    borderRadius: 'var(--radius)',
+                    cursor: 'pointer',
+                    marginTop: '1rem'
                 }}
             >
-                + アイテムを追加
+                + アイテムを手動追加
             </button>
         </div>
     );
 
     return (
-        <div className={styles.overlay} style={{ zIndex: 1000 }}>
-            <div className={styles.modal} style={{ maxWidth: '600px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-                <h2 className={styles.title}>スキャン結果の確認</h2>
+        <div className={styles.overlay}>
+            <div className={styles.modal}>
+                <div className={styles.header}>
+                    <h2 className={styles.title}>
+                        <span>🧾</span> スキャン結果の確認
+                    </h2>
+                </div>
 
-                <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: '1rem' }}>
+                <div className={styles.tabs}>
                     <button
                         onClick={() => setActiveTab('register')}
-                        style={{
-                            flex: 1,
-                            padding: '1rem',
-                            background: activeTab === 'register' ? 'var(--background-hover)' : 'transparent',
-                            border: 'none',
-                            borderBottom: activeTab === 'register' ? '2px solid var(--primary)' : 'none',
-                            fontWeight: activeTab === 'register' ? 'bold' : 'normal',
-                            color: 'var(--foreground)'
-                        }}
+                        className={`${styles.tab} ${activeTab === 'register' ? styles.tabActive : ''}`}
                     >
-                        登録する ({items.length})
+                        登録リスト ({items.length})
                     </button>
                     <button
                         onClick={() => setActiveTab('exclude')}
-                        style={{
-                            flex: 1,
-                            padding: '1rem',
-                            background: activeTab === 'exclude' ? 'var(--background-hover)' : 'transparent',
-                            border: 'none',
-                            borderBottom: activeTab === 'exclude' ? '2px solid #ef4444' : 'none',
-                            fontWeight: activeTab === 'exclude' ? 'bold' : 'normal',
-                            color: 'var(--foreground)'
-                        }}
+                        className={`${styles.tab} ${activeTab === 'exclude' ? styles.tabActiveExclude : ''}`}
                     >
                         除外リスト ({excludedItems.length})
                     </button>
@@ -239,21 +219,21 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
 
                 {activeTab === 'register' ? (
                     <>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--secondary)', marginBottom: '0.5rem' }}>
-                            在庫として管理するアイテムです。次回購入予測の対象になります。
-                        </p>
+                        <div style={{ padding: '1rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                            在庫として登録するアイテムです。自動でカテゴリ分けされました。
+                        </div>
                         {renderList('register', items)}
                     </>
                 ) : (
                     <>
-                        <p style={{ fontSize: '0.9rem', color: '#ef4444', marginBottom: '0.5rem' }}>
-                            生鮮食品など、在庫管理しないアイテムです（今回は登録されません）。
-                        </p>
+                        <div style={{ padding: '1rem 1.5rem 0', color: 'var(--danger)', fontSize: '0.9rem' }}>
+                            生鮮食品など、今回は登録しないアイテムです。
+                        </div>
                         {renderList('exclude', excludedItems)}
                     </>
                 )}
 
-                <div className={styles.actions} style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                <div className={styles.footer}>
                     <button onClick={onClose} className={`${styles.btn} ${styles.btnCancel}`}>キャンセル</button>
                     <button
                         onClick={handleSubmit}

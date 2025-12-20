@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import styles from './InventoryTable.module.css';
+import styles from './ReceiptScanner.module.css';
+import ReceiptReviewModal from './ReceiptReviewModal';
+
+import { useState, useRef } from 'react';
+import styles from './ReceiptScanner.module.css';
 import ReceiptReviewModal from './ReceiptReviewModal';
 
 export default function ReceiptScanner({ onScanComplete }) {
     const [isScanning, setIsScanning] = useState(false);
     const [showReview, setShowReview] = useState(false);
+    const [showPrepModal, setShowPrepModal] = useState(false); // Controls the prep/processing modal
     const [scannedItems, setScannedItems] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const fileInputRef = useRef(null);
@@ -54,13 +59,12 @@ export default function ReceiptScanner({ onScanComplete }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Start scanning state (modal remains open but changes content)
         setIsScanning(true);
-        setErrorMsg(''); // Reset error
+        setErrorMsg('');
 
         try {
-            // Resize image before upload
             const resizedBlob = await resizeImage(file);
-
             const formData = new FormData();
             formData.append('file', resizedBlob, 'receipt.jpg');
 
@@ -69,80 +73,118 @@ export default function ReceiptScanner({ onScanComplete }) {
                 body: formData,
             });
 
-            let result;
             const text = await response.text();
+            let result;
 
             try {
                 result = JSON.parse(text);
             } catch (e) {
-                console.error('Invalid JSON response:', text);
-                const errorMessage = text.includes('DOCTYPE') ? 'サーバーエラーが発生しました (500)' : text.substring(0, 100);
-                throw new Error(`サーバー応答エラー: ${errorMessage}`);
+                const errorMessage = text.substring(0, 100);
+                throw new Error(`Server Error: ${errorMessage}`);
             }
 
             if (result.success) {
                 setScannedItems(result.items);
-                setShowReview(true);
+                // Transitions
+                setShowPrepModal(false); // Close prep modal
+                setShowReview(true); // Open review modal
             } else {
-                setErrorMsg('スキャン失敗: ' + (result.error || '不明なエラー'));
+                throw new Error(result.error || 'スキャンに失敗しました');
             }
         } catch (error) {
             console.error(error);
-            setErrorMsg('エラー発生: ' + (error.message || error));
+            setErrorMsg('エラー: ' + error.message);
+            // Keep prep modal open to show error
         } finally {
             setIsScanning(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
-            <button
-                className={`${styles.btn}`}
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isScanning}
-                style={{ position: 'relative', overflow: 'hidden' }}
-            >
-                {isScanning ? (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className={styles.spinner}></span> 解析中...
-                    </span>
-                ) : '📷 レシートをスキャン'}
-            </button>
+    const handleFabClick = () => {
+        setShowPrepModal(true);
+        setErrorMsg('');
+    };
 
-            {errorMsg && (
-                <div style={{ marginTop: '0.5rem' }}>
-                    <p style={{ color: 'red', fontSize: '0.8rem', marginBottom: '0.2rem' }}>エラーが発生しました (コピーして共有してください):</p>
-                    <textarea
-                        readOnly
-                        value={errorMsg}
-                        style={{
-                            width: '100%',
-                            height: '80px',
-                            fontSize: '0.8rem',
-                            padding: '0.5rem',
-                            borderRadius: '4px',
-                            border: '1px solid #ccc',
-                            backgroundColor: '#fff',
-                            color: '#333'
-                        }}
-                    />
+    const triggerFileSelect = () => {
+        fileInputRef.current?.click();
+    };
+
+    return (
+        <>
+            {/* 1. Floating Action Button */}
+            <div className={styles.fabContainer}>
+                <span className={styles.fabLabel}>レシートをスキャン</span>
+                <button
+                    className={styles.fabBtn}
+                    onClick={handleFabClick}
+                    title="レシートをスキャン"
+                >
+                    📷
+                </button>
+            </div>
+
+            {/* 2. Preparation / Processing Modal */}
+            {showPrepModal && (
+                <div className={styles.overlay} onClick={() => !isScanning && setShowPrepModal(false)}>
+                    <div className={`${styles.modal} ${isScanning ? styles.processing : ''}`} onClick={e => e.stopPropagation()}>
+                        {!isScanning && (
+                            <button className={styles.closeBtn} onClick={() => setShowPrepModal(false)}>×</button>
+                        )}
+
+                        <div className={styles.scanIcon}>
+                            {isScanning ? '🐈' : '📷'}
+                        </div>
+
+                        {isScanning ? (
+                            <>
+                                <div className={styles.processingText}>レシート解析中...</div>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                                    猫が一生懸命読んでいます🐾
+                                </p>
+                                <div className={styles.progressBar}>
+                                    <div className={styles.progressFill}></div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>レシートを追加</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                    写真をとるか、ライブラリから選択してください
+                                </p>
+
+                                {errorMsg && (
+                                    <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', borderRadius: '8px', fontSize: '0.9rem' }}>
+                                        {errorMsg}
+                                    </div>
+                                )}
+
+                                <div className={styles.btnGroup}>
+                                    <button className={styles.actionBtn} onClick={triggerFileSelect}>
+                                        <span>📂</span> 画像を選択 / カメラ起動
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
 
+            {/* Hidden Input */}
             <input
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                accept="image/*" // Allow selection of any image file
+                accept="image/*"
                 onChange={handleFileChange}
             />
 
+            {/* 3. Review Modal */}
             <ReceiptReviewModal
                 isOpen={showReview}
                 onClose={() => setShowReview(false)}
                 scannedItems={scannedItems}
             />
-        </div>
+        </>
     );
 }
