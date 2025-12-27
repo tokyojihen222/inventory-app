@@ -7,11 +7,8 @@ import { headers } from 'next/headers'
 export async function signInWithGoogle() {
     const supabase = await createClient()
 
-    // 動的にコールバックURLを構築
-    const headersList = await headers()
-    const host = headersList.get('host')
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-    const callbackUrl = `${protocol}://${host}/callback`
+    // 動的なホスト取得をやめ、確認済みの正しいURLを固定で使用する
+    const callbackUrl = 'https://inventory-b2mssg86g-tokyojihen222s-projects.vercel.app/callback'
 
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
