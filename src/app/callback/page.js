@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
@@ -9,17 +9,22 @@ function AuthCallbackContent() {
     const searchParams = useSearchParams();
     const [status, setStatus] = useState('認証処理中...');
 
+    const processingRef = useRef(false);
+
     useEffect(() => {
         const handleAuth = async () => {
+            const code = searchParams.get('code');
+            if (!code) {
+                setStatus('認証コードがありません');
+                setTimeout(() => router.push('/login?error=no_code'), 2000);
+                return;
+            }
+
+            // 既に処理中、または処理済みなら何もしない
+            if (processingRef.current) return;
+            processingRef.current = true;
+
             try {
-                const code = searchParams.get('code');
-
-                if (!code) {
-                    setStatus('認証コードがありません');
-                    setTimeout(() => router.push('/login?error=no_code'), 2000);
-                    return;
-                }
-
                 const supabase = createClient();
 
                 // Exchange the code for a session
@@ -27,6 +32,7 @@ function AuthCallbackContent() {
 
                 if (error) {
                     console.error('Auth error:', error);
+                    // エラーの内容によってはリトライを許可すべきだが、PKCEエラーは致命的なので停止
                     setStatus('認証エラー: ' + error.message);
                     setTimeout(() => router.push('/login?error=auth'), 2000);
                     return;
