@@ -16,8 +16,8 @@ export default function LoginPage() {
         try {
             const supabase = createClient();
             const redirectTo = process.env.NODE_ENV === 'development'
-                ? 'http://localhost:3000/auth/callback'
-                : 'https://neko-pj-kura-2025.vercel.app/auth/callback';
+                ? 'http://localhost:3000/callback'
+                : 'https://neko-pj-kura-2025.vercel.app/callback';
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
