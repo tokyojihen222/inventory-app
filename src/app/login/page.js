@@ -15,9 +15,8 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
-            const redirectTo = process.env.NODE_ENV === 'development'
-                ? 'http://localhost:3000/callback'
-                : 'https://neko-pj-kura-2025.vercel.app/callback';
+            // 現在のドメイン（localhost または VercelのURL）を動的に取得して使用
+            const redirectTo = `${window.location.origin}/callback`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
