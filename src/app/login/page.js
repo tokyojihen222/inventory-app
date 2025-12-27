@@ -15,6 +15,10 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
+
+            // 既存のセッションがあればクリアして、クリーンな状態で開始する
+            await supabase.auth.signOut();
+
             // 現在のドメイン（localhost または VercelのURL）を動的に取得して使用
             const redirectTo = `${window.location.origin}/callback`;
 
