@@ -1,6 +1,6 @@
 import './globals.css';
 
-import './globals.css';
+
 
 export const metadata = {
     title: '在庫管理アプリ with Ruby',
