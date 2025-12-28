@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import styles from './login.module.css';
@@ -40,11 +41,16 @@ export default function LoginPage() {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <img
-                    src="/images/ruby/ruby_main.png"
-                    alt="Ruby-chan"
-                    className={styles.rubyImage}
-                />
+                <div style={{ position: 'relative', width: '180px', height: '180px', marginBottom: '24px' }}>
+                    <Image
+                        src="/images/ruby/ruby_main.png"
+                        alt="Ruby-chan"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                        className={styles.rubyImage}
+                        priority
+                    />
+                </div>
                 <h1 className={styles.title}>Cosmic Inventory</h1>
                 <p className={styles.description}>在庫管理システムへようこそ</p>
 
