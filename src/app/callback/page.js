@@ -59,7 +59,6 @@ function AuthCallbackContent() {
             }
 
             if (session) {
-                setDebugInfo(prev => prev + '\n\n[SUCCESS] Session found via Implicit Flow/Storage');
                 handleSuccess();
                 return;
             }
