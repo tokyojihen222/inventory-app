@@ -16,10 +16,12 @@ function AuthCallbackContent() {
 
     useEffect(() => {
         // デバッグ情報収集
+        // デバッグ情報収集
         if (typeof window !== 'undefined') {
             const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'));
             const data = keys.map(k => `${k}: ${localStorage.getItem(k)?.substring(0, 20)}...`).join('\n');
-            setDebugInfo(`Storage Keys: ${keys.join(', ')}\nValues: ${data}`);
+            const urlInfo = `URL: ${window.location.href}\nHash: ${window.location.hash}`;
+            setDebugInfo(`Current URL Info:\n${urlInfo}\n\nStorage Keys: ${keys.join(', ')}\nValues: ${data}`);
         }
     }, []);
 
@@ -32,7 +34,7 @@ function AuthCallbackContent() {
             if (error) {
                 console.error('Auth error param:', error, error_description);
                 setStatus(`認証エラー: ${error_description || error}`);
-                setTimeout(() => router.push('/login'), 3000);
+                setTimeout(() => window.location.href = '/login', 3000);
                 return;
             }
 
@@ -56,7 +58,7 @@ function AuthCallbackContent() {
                     setStatus('認証に失敗しました: ' + exchangeError.message);
                     // 失敗したらフラグを戻して再試行可能にするか、リダイレクトするか
                     // ここではリダイレクト
-                    setTimeout(() => router.push('/login'), 3000);
+                    setTimeout(() => window.location.href = '/login', 3000);
                     return;
                 }
 
@@ -71,7 +73,7 @@ function AuthCallbackContent() {
             } catch (e) {
                 console.error('Unexpected error:', e);
                 setStatus('予期しないエラーが発生しました');
-                setTimeout(() => router.push('/login'), 3000);
+                setTimeout(() => window.location.href = '/login', 3000);
             }
         };
 

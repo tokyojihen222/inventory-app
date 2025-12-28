@@ -15,8 +15,8 @@ export default function LoginPage() {
             // 既存のセッションをクリア
             await supabase.auth.signOut();
 
-            // ユーザーによって確認された「確実に動作するURL」を固定で使用
-            const redirectTo = 'https://inventory-b2mssg86g-tokyojihen222s-projects.vercel.app/callback';
+            // ユーザーが現在アクセスしているURLをそのまま使う（Cookie不整合防止）
+            const redirectTo = `${window.location.origin}/callback`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -70,6 +70,9 @@ export default function LoginPage() {
                     </svg>
                     {loading ? '接続中...' : 'Googleでログイン'}
                 </button>
+                <div style={{ marginTop: '20px', fontSize: '10px', color: '#666', textAlign: 'center' }}>
+                    System v3.0 (LocalStorage Mode)
+                </div>
             </div>
         </div>
     );
