@@ -29,7 +29,20 @@ function AuthCallbackContent() {
         const handleAuth = async () => {
             const supabase = createClient();
 
-            const handleSuccess = () => {
+            const handleSuccess = async () => {
+                // メールアドレスチェック（簡易ホワイトリスト）
+                const { data: { user } } = await supabase.auth.getUser();
+                // 許可するメールアドレスリスト
+                const allowedEmails = ['tokyojihen222@gmail.com'];
+
+                if (!user || (user.email && !allowedEmails.includes(user.email))) {
+                    console.error('Unauthorized access attempt:', user?.email);
+                    await supabase.auth.signOut();
+                    setStatus(`アクセス権限がありません: ${user?.email}`);
+                    setTimeout(() => window.location.href = '/login?error=unauthorized', 3000);
+                    return;
+                }
+
                 // Cookieを明示的にセット（Client Side）
                 document.cookie = `session=authenticated; path=/; max-age=${60 * 60 * 24 * 30}; secure; samesite=lax`;
                 setStatus('ログイン成功！リダイレクト中...');
