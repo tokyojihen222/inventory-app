@@ -11,19 +11,7 @@ function AuthCallbackContent() {
 
     // 二重実行防止用のRef
     const processingRef = useRef(false);
-    // デバッグ用ステート
-    const [debugInfo, setDebugInfo] = useState('');
 
-    useEffect(() => {
-        // デバッグ情報収集
-        // デバッグ情報収集
-        if (typeof window !== 'undefined') {
-            const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'));
-            const data = keys.map(k => `${k}: ${localStorage.getItem(k)?.substring(0, 20)}...`).join('\n');
-            const urlInfo = `URL: ${window.location.href}\nHash: ${window.location.hash}`;
-            setDebugInfo(`Current URL Info:\n${urlInfo}\n\nStorage Keys: ${keys.join(', ')}\nValues: ${data}`);
-        }
-    }, []);
 
     useEffect(() => {
         const handleAuth = async () => {
@@ -142,18 +130,7 @@ function AuthCallbackContent() {
                 margin: '0 auto 1rem'
             }} />
             <p style={{ margin: 0 }}>{status}</p>
-            <pre style={{
-                marginTop: '20px',
-                textAlign: 'left',
-                fontSize: '12px',
-                background: 'rgba(0,0,0,0.5)',
-                padding: '10px',
-                borderRadius: '8px',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all'
-            }}>
-                {debugInfo}
-            </pre>
+
         </div>
     );
 }
