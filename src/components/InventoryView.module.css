@@ -148,3 +148,20 @@
         /* Make buttons expand */
     }
 }
+
+.footer {
+    margin-top: 4rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.825rem;
+    opacity: 0.8;
+}
+
+.footerImage {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+    mask-image: radial-gradient(circle, black 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle, black 60%, transparent 100%);
+}

@@ -128,6 +128,7 @@
 .processingText {
     font-size: 1.1rem;
     background: linear-gradient(90deg, var(--primary), var(--accent));
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;

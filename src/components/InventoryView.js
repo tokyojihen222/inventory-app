@@ -54,7 +54,7 @@ export default function InventoryView({ initialItems }) {
                     <ReceiptScanner onScanComplete={() => window.location.reload()} />
                     <button
                         onClick={handleAdd}
-                        className={styles.btnAdd}
+                        className={`${styles.btnAdd} btn-paw`}
                     >
                         <span>+</span>
                         <span>追加</span>
@@ -86,6 +86,11 @@ export default function InventoryView({ initialItems }) {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
             />
+
+            <footer className={styles.footer}>
+                <img src="/images/ruby/ruby_sheet_2.jpg" alt="Sleeping Ruby" className={styles.footerImage} />
+                <p>© 2025 Cosmic Inventory with Ruby</p>
+            </footer>
 
             <AddItemModal
                 isOpen={isModalOpen}
