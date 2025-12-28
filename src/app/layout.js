@@ -1,18 +1,16 @@
 import './globals.css';
-import { Inter, Outfit } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
+import './globals.css';
 
 export const metadata = {
-    title: 'Cosmic Inventory',
-    description: 'Manage your household inventory with neko-tech style',
+    title: '在庫管理アプリ with Ruby',
+    description: 'Simple, cute, and warm inventory management',
 };
 
 export default function RootLayout({ children }) {
     return (
         <html lang="ja">
-            <body className={`${inter.variable} ${outfit.variable}`}>{children}</body>
+            <body>{children}</body>
         </html>
     );
 }

@@ -40,7 +40,12 @@ export default function LoginPage() {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h1 className={styles.title}>ログイン</h1>
+                <img
+                    src="/images/ruby/ruby_main.png"
+                    alt="Ruby-chan"
+                    className={styles.rubyImage}
+                />
+                <h1 className={styles.title}>Cosmic Inventory</h1>
                 <p className={styles.description}>在庫管理システムへようこそ</p>
 
                 <div className={styles.divider}>Googleアカウントで継続</div>
