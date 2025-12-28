@@ -27,6 +27,31 @@ function AuthCallbackContent() {
 
     useEffect(() => {
         const handleAuth = async () => {
+            const supabase = createClient();
+
+            const handleSuccess = () => {
+                // Cookieを明示的にセット（Client Side）
+                document.cookie = `session=authenticated; path=/; max-age=${60 * 60 * 24 * 30}; secure; samesite=lax`;
+                setStatus('ログイン成功！リダイレクト中...');
+                // ハードリダイレクトでキャッシュ回避
+                window.location.href = '/';
+            };
+
+            // 1. まずハッシュに含まれるImplicit Flowのトークンなどのセッション確認を試みる
+            // start up時にURLハッシュがあればsupabase-jsが自動的に解析してsessionにセットする
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+            if (sessionError) {
+                console.error('Session error:', sessionError);
+            }
+
+            if (session) {
+                setDebugInfo(prev => prev + '\n\n[SUCCESS] Session found via Implicit Flow/Storage');
+                handleSuccess();
+                return;
+            }
+
+            // 2. セッションがなければPKCEのCodeフローを試みる
             const code = searchParams.get('code');
             const error = searchParams.get('error');
             const error_description = searchParams.get('error_description');
@@ -39,7 +64,22 @@ function AuthCallbackContent() {
             }
 
             if (!code) {
-                // コードがない場合は何もしない（画面ロード直後など）
+                // コードもセッションもない場合は待機（onAuthStateChangeが拾う可能性があるため即死させない）
+                // ただしImplicit Flowの場合は即座にgetSessionで取れるはずなので、
+                // ここに来る＝認証情報なしの可能性が高い
+                if (!window.location.hash) {
+                    // ハッシュもコードもなければ何もしない（通常アクセス）
+                    return;
+                }
+                // ハッシュがあるのにセッションが取れなかった場合
+                setStatus('認証情報を解析中...');
+
+                // onAuthStateChangeでのキャッチを少し待つ
+                const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' && session) {
+                        handleSuccess();
+                    }
+                });
                 return;
             }
 
@@ -48,27 +88,18 @@ function AuthCallbackContent() {
             processingRef.current = true;
 
             try {
-                const supabase = createClient();
-
                 // Exchange the code for a session
                 const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
                 if (exchangeError) {
                     console.error('Exchange error:', exchangeError);
                     setStatus('認証に失敗しました: ' + exchangeError.message);
-                    // 失敗したらフラグを戻して再試行可能にするか、リダイレクトするか
-                    // ここではリダイレクト
                     setTimeout(() => window.location.href = '/login', 3000);
                     return;
                 }
 
                 if (data.session) {
-                    // Cookieを明示的にセット（Client Side）
-                    document.cookie = `session=authenticated; path=/; max-age=${60 * 60 * 24 * 30}; secure; samesite=lax`;
-
-                    setStatus('ログイン成功！リダイレクト中...');
-                    router.push('/');
-                    router.refresh(); // Middlewareの状態を反映させるためリフレッシュ
+                    handleSuccess();
                 }
             } catch (e) {
                 console.error('Unexpected error:', e);
