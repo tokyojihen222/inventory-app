@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import styles from './login.module.css';
+import rubyMain from '@/assets/ruby_main.png';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -41,14 +42,19 @@ export default function LoginPage() {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <div style={{ position: 'relative', width: '180px', height: '180px', marginBottom: '24px' }}>
-                    <Image
-                        src="/images/ruby/ruby_main.png"
+                <div style={{ padding: '20px' }}>
+                    <img
+                        src="/ruby.png"
                         alt="Ruby-chan"
-                        fill
-                        style={{ objectFit: 'contain' }}
+                        style={{
+                            width: '180px',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            display: 'block',
+                            margin: '0 auto 24px auto',
+                            filter: 'drop-shadow(0 4px 6px rgba(74, 59, 50, 0.1))'
+                        }}
                         className={styles.rubyImage}
-                        priority
                     />
                 </div>
                 <h1 className={styles.title}>Cosmic Inventory</h1>
@@ -82,7 +88,7 @@ export default function LoginPage() {
                     {loading ? '接続中...' : 'Googleでログイン'}
                 </button>
                 <div style={{ marginTop: '20px', fontSize: '10px', color: '#666', textAlign: 'center' }}>
-                    System v3.0 (LocalStorage Mode)
+                    System v3.1 (Ruby Fixed)
                 </div>
             </div>
         </div>
