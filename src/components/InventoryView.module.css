@@ -69,17 +69,20 @@
 }
 
 .btnAdd {
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--radius);
-    font-weight: 600;
+    padding: 0.6rem 1.6rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    cursor: pointer;
+    background: var(--accent);
+    color: #fff;
+    border: 2px solid var(--accent);
+    font-size: 0.95rem;
 }
 
 .btnAdd:hover {
