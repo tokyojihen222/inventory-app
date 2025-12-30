@@ -1,34 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap');
 
 :root {
-  /* Project Ruby Palette (Use Warm/Organic Tones) */
-  --bg-main: #f9f5f0;
-  /* Warm Cream */
-  --bg-card: #ffffff;
-  --bg-card-hover: #fffbf5;
+  /* Project Ruby Palette (Deep Warm/Organic) */
+  --bg-main: #f0e6d2;
+  /* Deeper Latte Beige (was #f9f5f0) */
+  --bg-card: #fffcf8;
+  /* Warm White */
+  --bg-card-hover: #fff;
 
-  --primary: #e6b8a2;
-  /* Soft Pinkish Beige */
-  --primary-hover: #d4a373;
-  /* Camel */
+  --primary: #cca493;
+  /* Deep Terracotta/Rose */
+  --primary-hover: #b08d7e;
 
-  --accent: #ff8c42;
-  /* Warm Orange (Ruby's energy) */
+  --accent: #d97736;
+  /* Deep Orange */
 
   --text-main: #4a3b32;
-  /* Dark Coffee Brown */
-  --text-muted: #8d7f71;
-  /* Mocha Brown */
+  /* Coffee Brown (unchanged, good depth) */
+  --text-muted: #8c7b70;
 
-  --border: #e6e2dd;
-  --shadow: rgba(74, 59, 50, 0.08);
+  --border: #dcd3cb;
+  --shadow: rgba(74, 59, 50, 0.12);
 
-  --success: #81b29a;
-  /* Sage Green */
-  --danger: #e07a5f;
-  /* Terra Cotta */
-  --warning: #f2cc8f;
-  /* Sand Yellow */
+  --success: #6b9080;
+  /* Muted Green */
+  --danger: #cf664e;
+  /* Deep Red */
+  --warning: #e09f3e;
+  /* Deep Yellow */
 
   --font-sans: 'M PLUS Rounded 1c', sans-serif;
   --font-heading: 'Zen Maru Gothic', sans-serif;

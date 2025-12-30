@@ -49,18 +49,17 @@
 }
 
 .table tbody tr {
-    background: rgba(30, 41, 59, 0.4);
-    backdrop-filter: blur(8px);
+    background: #ffffff;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: var(--radius);
     /* Create borders for tr using box-shadow to allow border-radius on tr */
-    box-shadow: 0 0 0 1px var(--border);
+    box-shadow: 0 2px 4px var(--shadow), 0 0 0 1px var(--border);
 }
 
 .table tbody tr:hover {
     transform: translateY(-2px) scale(1.005);
-    background: rgba(30, 41, 59, 0.7);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--primary-glow);
+    background: #fff;
+    box-shadow: 0 8px 16px rgba(74, 59, 50, 0.15), 0 0 0 1px var(--primary);
     z-index: 10;
     position: relative;
 }
