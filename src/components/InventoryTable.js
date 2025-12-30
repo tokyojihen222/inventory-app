@@ -121,7 +121,7 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
                         ))
                     )}
                 </tbody>
-            </table> >
-        </div >
+            </table>
+        </div>
     );
 }
