@@ -88,7 +88,7 @@ export default function LoginPage() {
                     {loading ? '接続中...' : 'Googleでログイン'}
                 </button>
                 <div style={{ marginTop: '20px', fontSize: '10px', color: '#666', textAlign: 'center' }}>
-                    System v3.2 (Base64 Mode)
+                    System v3.3 (New Ruby)
                 </div>
             </div>
         </div>
