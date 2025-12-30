@@ -143,7 +143,11 @@ export default function ReceiptScanner({ onScanComplete }) {
                             )}
 
                             <div className={styles.scanIcon}>
-                                {isScanning ? '🐈' : '📷'}
+                                {isScanning ? (
+                                    <img src="/images/ruby/06.png" alt="Scanning..." style={{ width: '120px', height: 'auto', animation: 'bounce 1s infinite alternate' }} />
+                                ) : (
+                                    <span style={{ fontSize: '4rem' }}>📷</span>
+                                )}
                             </div>
 
                             {isScanning ? (
