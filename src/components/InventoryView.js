@@ -89,8 +89,11 @@ export default function InventoryView({ initialItems }) {
             />
 
             <footer className={styles.footer}>
-                <img src="/images/ruby/ruby_sheet_2.jpg" alt="Sleeping Ruby" className={styles.footerImage} />
-                <p>© 2025 Cosmic Inventory with Ruby</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'flex-end' }}>
+                    <img src="/images/ruby/08.png" alt="Ruby" className={styles.footerImage} style={{ height: '60px' }} />
+                    <img src="/images/ruby/09.png" alt="Ruby" className={styles.footerImage} style={{ height: '50px' }} />
+                </div>
+                <p>© 2025 うしねこの蔵 with Ruby</p>
             </footer>
 
             <AddItemModal
