@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import styles from './login.module.css';
+import { rubyBase64 } from './rubyBase64';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -43,7 +44,7 @@ export default function LoginPage() {
             <div className={styles.card}>
                 <div style={{ padding: '20px' }}>
                     <img
-                        src="/ruby.png"
+                        src={rubyBase64}
                         alt="Ruby-chan"
                         style={{
                             width: '180px',
@@ -87,7 +88,7 @@ export default function LoginPage() {
                     {loading ? '接続中...' : 'Googleでログイン'}
                 </button>
                 <div style={{ marginTop: '20px', fontSize: '10px', color: '#666', textAlign: 'center' }}>
-                    System v3.1 (Ruby Fixed)
+                    System v3.2 (Base64 Mode)
                 </div>
             </div>
         </div>
