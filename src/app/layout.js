@@ -3,7 +3,7 @@ import './globals.css';
 
 
 export const metadata = {
-    title: '在庫管理アプリ with Ruby',
+    title: 'うしねこの蔵',
     description: 'Simple, cute, and warm inventory management',
 };
 

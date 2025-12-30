@@ -57,8 +57,13 @@ export default function LoginPage() {
                         className={styles.rubyImage}
                     />
                 </div>
-                <h1 className={styles.title}>Cosmic Inventory</h1>
+                <h1 className={styles.title}>うしねこの蔵</h1>
                 <p className={styles.description}>在庫管理システムへようこそ</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '-15px', marginBottom: '15px' }}>
+                    <img src="/images/ruby/02.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src="/images/ruby/03.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src="/images/ruby/07.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                </div>
 
                 <div className={styles.divider}>Googleアカウントで継続</div>
 
