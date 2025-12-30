@@ -38,16 +38,14 @@ export default function InventoryView({ initialItems }) {
         <main className={styles.mainContainer}>
             <div className={styles.header}>
                 <div className={styles.brand}>
-                    <svg className={styles.catLogo} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor" opacity="0.1" />
-                        <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        <circle cx="9" cy="10" r="1.5" fill="currentColor" />
-                        <circle cx="15" cy="10" r="1.5" fill="currentColor" />
-                        <path d="M10 14C10 14 11 15 12 15C13 15 14 14 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        <path d="M4 8L3 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        <path d="M20 8L21 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <svg className={styles.catLogo} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2c0 1.65-1.35 3-3 3S8 3.65 8 2c0-1.65 1.35-3 3-3s3 1.35 3 3zm6 4c0 1.65-1.35 3-3 3s-3-1.35-3-3 1.35-3 3-3 3 1.35 3 3zM6 9c1.65 0 3-1.35 3-3S7.65 3 6 3 3 4.35 3 6s1.35 3 3 3zm6.5 2c3.03 0 5.5 2.47 5.5 5.5v1.25c0 1.79-1.46 3.25-3.25 3.25h-5.5C7.46 21 6 19.54 6 17.75V16.5C6 13.47 8.47 11 11.5 11z" />
                     </svg>
                     <h1 className={styles.title}>Cosmic Inventory</h1>
+                </div>
+                {/* Decorative Ruby Image (Top Right Poking) */}
+                <div style={{ position: 'absolute', top: '-10px', right: '20px', width: '60px', zIndex: 0, transform: 'rotate(10deg)', pointerEvents: 'none' }}>
+                    <img src="/images/ruby/01.png" alt="" style={{ width: '100%', height: 'auto' }} />
                 </div>
 
                 <div className={styles.controls}>

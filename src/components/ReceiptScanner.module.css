@@ -3,17 +3,21 @@
     background: linear-gradient(135deg, #8b5cf6, #d946ef);
     color: white;
     border: none;
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--radius);
-    font-weight: 600;
+    padding: 0.6rem 1.6rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
-    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(217, 70, 239, 0.2);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 0.95rem;
+    background: #fff;
+    color: var(--accent);
+    border: 2px solid var(--accent);
 }
 
 .scanBtn:hover {
