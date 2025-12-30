@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './ReceiptScanner.module.css';
 import ReceiptReviewModal from './ReceiptReviewModal';
+import { rubyImages } from '@/assets/rubyImages';
 
 
 
@@ -144,7 +145,7 @@ export default function ReceiptScanner({ onScanComplete }) {
 
                             <div className={styles.scanIcon}>
                                 {isScanning ? (
-                                    <img src="/images/ruby/06.png" alt="Scanning..." style={{ width: '120px', height: 'auto', animation: 'bounce 1s infinite alternate' }} />
+                                    <img src={rubyImages['06']} alt="Scanning..." style={{ width: '120px', height: 'auto', animation: 'bounce 1s infinite alternate' }} />
                                 ) : (
                                     <span style={{ fontSize: '4rem' }}>📷</span>
                                 )}

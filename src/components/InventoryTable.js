@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './InventoryTable.module.css';
 import { updateInventory } from '@/app/actions';
+import { rubyImages } from '@/assets/rubyImages';
 
 export default function InventoryTable({ initialItems, onEdit, onDelete }) {
     const [items, setItems] = useState(initialItems);
@@ -80,7 +81,7 @@ export default function InventoryTable({ initialItems, onEdit, onDelete }) {
                         <tr>
                             <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-                                    <img src="/images/ruby/10.png" alt="No Items" style={{ width: '120px', height: 'auto', opacity: 0.8 }} />
+                                    <img src={rubyImages['10']} alt="No Items" style={{ width: '120px', height: 'auto', opacity: 0.8 }} />
                                     <p>まだ在庫がありません。<br />「＋追加」ボタンから登録してね！</p>
                                 </div>
                             </td>

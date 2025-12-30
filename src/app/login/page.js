@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import styles from './login.module.css';
-import { rubyBase64 } from './rubyBase64';
+import { rubyImages } from '@/assets/rubyImages';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ export default function LoginPage() {
             <div className={styles.card}>
                 <div style={{ padding: '20px' }}>
                     <img
-                        src={rubyBase64}
+                        src={rubyImages['メイン']} // Assuming usage of the main image
                         alt="Ruby-chan"
                         style={{
                             width: '180px',
@@ -60,9 +60,9 @@ export default function LoginPage() {
                 <h1 className={styles.title}>うしねこの蔵</h1>
                 <p className={styles.description}>在庫管理システムへようこそ</p>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '-15px', marginBottom: '15px' }}>
-                    <img src="/images/ruby/02.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
-                    <img src="/images/ruby/03.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
-                    <img src="/images/ruby/07.png" alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src={rubyImages['02']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src={rubyImages['03']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src={rubyImages['07']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
                 </div>
 
                 <div className={styles.divider}>Googleアカウントで継続</div>

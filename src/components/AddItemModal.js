@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './AddItemModal.module.css';
 import { addItem, updateItem } from '@/app/actions';
+import { rubyImages } from '@/assets/rubyImages';
 
 export default function AddItemModal({ isOpen, onClose, editItem = null }) {
     if (!isOpen) return null;
@@ -33,11 +34,11 @@ export default function AddItemModal({ isOpen, onClose, editItem = null }) {
         <div className={styles.overlay}>
             <div className={styles.modal} style={{ position: 'relative', overflow: 'visible' }}>
                 <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-                    <img src="/images/ruby/05.png" alt="" style={{ width: '100px', height: 'auto' }} />
+                    <img src={rubyImages['05']} alt="" style={{ width: '100px', height: 'auto' }} />
                 </div>
                 {/* Side decorations */}
-                <img src="/images/ruby/11.png" alt="" style={{ position: 'absolute', bottom: '-20px', left: '-30px', width: '60px', height: 'auto', transform: 'rotate(-10deg)', pointerEvents: 'none' }} />
-                <img src="/images/ruby/12.png" alt="" style={{ position: 'absolute', top: '-20px', right: '-20px', width: '50px', height: 'auto', transform: 'rotate(15deg)', pointerEvents: 'none' }} />
+                <img src={rubyImages['11']} alt="" style={{ position: 'absolute', bottom: '-20px', left: '-30px', width: '60px', height: 'auto', transform: 'rotate(-10deg)', pointerEvents: 'none' }} />
+                <img src={rubyImages['12']} alt="" style={{ position: 'absolute', top: '-20px', right: '-20px', width: '50px', height: 'auto', transform: 'rotate(15deg)', pointerEvents: 'none' }} />
 
                 <h2 className={styles.title} style={{ marginTop: '30px' }}>{editItem ? '商品を編集' : '商品を追加'}</h2>
                 <form action={handleSubmit} className={styles.form}>
