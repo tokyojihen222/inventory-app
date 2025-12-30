@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import styles from './login.module.css';
-import rubyMain from '@/assets/ruby_main.png';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
