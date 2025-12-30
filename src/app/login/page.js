@@ -52,7 +52,8 @@ export default function LoginPage() {
                             objectFit: 'contain',
                             display: 'block',
                             margin: '0 auto 24px auto',
-                            filter: 'drop-shadow(0 4px 6px rgba(74, 59, 50, 0.1))'
+                            filter: 'drop-shadow(0 4px 6px rgba(74, 59, 50, 0.1))',
+                            mixBlendMode: 'multiply'
                         }}
                         className={styles.rubyImage}
                     />
@@ -60,9 +61,9 @@ export default function LoginPage() {
                 <h1 className={styles.title}>うしねこの蔵</h1>
                 <p className={styles.description}>在庫管理システムへようこそ</p>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '-15px', marginBottom: '15px' }}>
-                    <img src={rubyImages['02']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
-                    <img src={rubyImages['03']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
-                    <img src={rubyImages['07']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8 }} />
+                    <img src={rubyImages['02']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8, mixBlendMode: 'multiply' }} />
+                    <img src={rubyImages['03']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8, mixBlendMode: 'multiply' }} />
+                    <img src={rubyImages['07']} alt="" style={{ width: '40px', height: 'auto', opacity: 0.8, mixBlendMode: 'multiply' }} />
                 </div>
 
                 <div className={styles.divider}>Googleアカウントで継続</div>
