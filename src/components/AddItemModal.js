@@ -37,8 +37,9 @@ export default function AddItemModal({ isOpen, onClose, editItem = null }) {
                     <img src={rubyImages['05']} alt="" style={{ width: '100px', height: 'auto' }} />
                 </div>
                 {/* Side decorations */}
-                <img src={rubyImages['11']} alt="" style={{ position: 'absolute', bottom: '-20px', left: '-30px', width: '60px', height: 'auto', transform: 'rotate(-10deg)', pointerEvents: 'none' }} />
-                <img src={rubyImages['12']} alt="" style={{ position: 'absolute', top: '-20px', right: '-20px', width: '50px', height: 'auto', transform: 'rotate(15deg)', pointerEvents: 'none' }} />
+                {/* Side decorations */}
+                <img src={rubyImages['11']} alt="" style={{ position: 'absolute', bottom: '10px', left: '10px', width: '50px', height: 'auto', opacity: 0.8, pointerEvents: 'none', zIndex: 0 }} />
+                <img src={rubyImages['12']} alt="" style={{ position: 'absolute', top: '10px', right: '10px', width: '40px', height: 'auto', opacity: 0.8, pointerEvents: 'none', zIndex: 0 }} />
 
                 <h2 className={styles.title} style={{ marginTop: '30px' }}>{editItem ? '商品を編集' : '商品を追加'}</h2>
                 <form action={handleSubmit} className={styles.form}>
