@@ -46,10 +46,10 @@ export default function InventoryView({ initialItems }) {
                 </div>
                 {/* Decorative Ruby Image (Top Right Poking) */}
                 <div style={{ position: 'absolute', top: '-10px', right: '20px', width: '60px', zIndex: 0, transform: 'rotate(10deg)', pointerEvents: 'none' }}>
-                    <img src={rubyImages['01']} alt="" style={{ width: '100%', height: 'auto', mixBlendMode: 'multiply' }} />
+                    <img src={rubyImages['01']} alt="" style={{ width: '100%', height: 'auto' }} />
                 </div>
                 <div style={{ position: 'absolute', top: '50px', left: '20px', width: '50px', zIndex: 0, transform: 'rotate(-15deg)', pointerEvents: 'none' }}>
-                    <img src={rubyImages['04']} alt="" style={{ width: '100%', height: 'auto', opacity: 0.6, mixBlendMode: 'multiply' }} />
+                    <img src={rubyImages['04']} alt="" style={{ width: '100%', height: 'auto', opacity: 0.6 }} />
                 </div>
 
                 <div className={styles.controls}>
@@ -91,8 +91,8 @@ export default function InventoryView({ initialItems }) {
 
             <footer className={styles.footer}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'flex-end' }}>
-                    <img src={rubyImages['08']} alt="Ruby" className={styles.footerImage} style={{ height: '60px', mixBlendMode: 'multiply' }} />
-                    <img src={rubyImages['09']} alt="Ruby" className={styles.footerImage} style={{ height: '50px', mixBlendMode: 'multiply' }} />
+                    <img src={rubyImages['08']} alt="Ruby" className={styles.footerImage} style={{ height: '60px' }} />
+                    <img src={rubyImages['09']} alt="Ruby" className={styles.footerImage} style={{ height: '50px' }} />
                 </div>
                 <p>© 2025 うしねこの蔵 with Ruby</p>
             </footer>
