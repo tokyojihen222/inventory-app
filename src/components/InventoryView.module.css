@@ -62,6 +62,27 @@
     transition: all 0.2s;
 }
 
+.btnMemo {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFD700;
+    color: #5d576b;
+    font-weight: bold;
+    padding: 0 1rem;
+    border-radius: 12px;
+    height: 44px;
+    margin-right: 0.5rem;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btnMemo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 215, 0, 0.4);
+}
+
 .btnLogout:hover {
     background: rgba(239, 68, 68, 0.1);
     color: var(--danger);

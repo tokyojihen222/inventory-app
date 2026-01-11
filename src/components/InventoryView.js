@@ -7,6 +7,8 @@ import ReceiptScanner from './ReceiptScanner';
 import styles from './InventoryView.module.css';
 import { logout } from '@/app/auth-actions';
 import { rubyImages } from '@/assets/rubyImages';
+import Link from 'next/link';
+
 
 export default function InventoryView({ initialItems }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +55,10 @@ export default function InventoryView({ initialItems }) {
 
                 <div className={styles.controls}>
                     <ReceiptScanner onScanComplete={() => window.location.reload()} />
+                    <Link href="/shopping-list" className={styles.btnMemo}>
+                        <span style={{ marginRight: '4px' }}>📝</span>
+                        <span>メモ</span>
+                    </Link>
                     <button
                         onClick={handleAdd}
                         className={`${styles.btnAdd} btn-paw`}

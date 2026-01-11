@@ -154,3 +154,38 @@ async function updatePrediction(id) {
         await sql`UPDATE items SET predicted_next_purchase = ${prediction.nextPurchaseDate} WHERE id = ${id}`;
     }
 }
+
+// Shopping List Actions
+
+export async function getShoppingList() {
+    return await sql`SELECT * FROM shopping_list ORDER BY created_at ASC`;
+}
+
+export async function addShoppingItem(name) {
+    if (!name || name.trim() === '') return;
+    await sql`INSERT INTO shopping_list (name) VALUES (${name})`;
+    revalidatePath('/shopping-list');
+}
+
+export async function toggleShoppingItem(id, checked) {
+    await sql`UPDATE shopping_list SET checked = ${checked} WHERE id = ${id}`;
+    revalidatePath('/shopping-list');
+}
+
+export async function deleteShoppingItem(id) {
+    await sql`DELETE FROM shopping_list WHERE id = ${id}`;
+    revalidatePath('/shopping-list');
+}
+
+export async function getPurchaseCandidates() {
+    // Candidates are items where:
+    // 1. Quantity <= Threshold
+    // 2. OR Predicted next purchase <= Now + 7 days
+    const candidates = await sql`
+        SELECT * FROM items 
+        WHERE quantity <= threshold 
+        OR (predicted_next_purchase IS NOT NULL AND predicted_next_purchase <= NOW() + INTERVAL '7 days')
+        ORDER BY predicted_next_purchase ASC
+    `;
+    return candidates;
+}
