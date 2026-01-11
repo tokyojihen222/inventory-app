@@ -33,9 +33,7 @@ export default function AddItemModal({ isOpen, onClose, editItem = null }) {
     return (
         <div className={styles.overlay}>
             <div className={styles.modal} style={{ position: 'relative', overflow: 'visible' }}>
-                <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-                    <img src={rubyImages['05']} alt="" style={{ width: '100px', height: 'auto' }} />
-                </div>
+
                 {/* Side decorations */}
                 {/* Side decorations */}
                 <img src={rubyImages['11']} alt="" style={{ position: 'absolute', bottom: '10px', left: '10px', width: '50px', height: 'auto', opacity: 0.8, pointerEvents: 'none', zIndex: 0 }} />
