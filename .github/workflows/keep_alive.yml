@@ -1,0 +1,28 @@
+name: Supabase Keep-alive
+
+on:
+  schedule:
+    # 毎日 日本時間の朝9時 (UTC 0:00) に実行
+    - cron: '0 0 * * *'
+  # 手動実行も可能にする
+  workflow_dispatch:
+
+jobs:
+  ping-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install postgres
+
+      - name: Run keep-alive script
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+        run: node scripts/keep_alive.js
