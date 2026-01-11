@@ -6,5 +6,5 @@ export const itemSchema = z.object({
     quantity: z.coerce.number().int().min(0, '在庫数は0以上の整数である必要があります'),
     threshold: z.coerce.number().int().min(0, '通知閾値は0以上の整数である必要があります'),
     unit: z.enum(['個', 'パック', 'ケース']).default('個'),
-    last_purchase_price: z.number().min(0).optional(),
+    last_purchase_price: z.number().min(0).nullable().optional(),
 });
