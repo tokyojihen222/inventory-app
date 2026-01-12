@@ -201,7 +201,7 @@ export async function recordPurchase(data) {
         VALUES (
             ${data.store_name}, 
             ${data.purchase_date || new Date().toISOString()}, 
-            ${data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
+            ${data.total_amount !== undefined ? data.total_amount : data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
         )
         RETURNING id
     `;

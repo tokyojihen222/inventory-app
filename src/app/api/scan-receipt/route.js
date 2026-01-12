@@ -40,10 +40,12 @@ export async function POST(request) {
        - price: 単価 (数値)
        - quantity: 数量 (数値)
        - is_fresh: 生鮮食品(肉、魚、野菜、果物、惣菜など)の場合 true
-    4. JSON形式のみ出力
+    4. total_amount: レシート合計金額 (数値)。「合計」「小計」などから抽出。計算が合わない場合でもレシート記載の合計を優先。
+    5. JSON形式のみ出力
     {
       "store_name": "...",
       "purchase_date": "...",
+      "total_amount": 1000,
       "items": [
         { "raw_name": "...", "name": "...", "category": "...", "quantity": 1, "unit": "個", "price": 100, "is_fresh": false }
       ]
@@ -62,8 +64,20 @@ export async function POST(request) {
             const responseText = result.response.text();
 
             const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const items = JSON.parse(jsonStr);
-            return NextResponse.json({ success: true, items });
+            const data = JSON.parse(jsonStr);
+            // Support both old format (array) and new format (object)
+            const resultItems = Array.isArray(data) ? data : data.items;
+            const meta = Array.isArray(data) ? {} : {
+                store_name: data.store_name,
+                purchase_date: data.purchase_date,
+                total_amount: data.total_amount
+            };
+
+            return NextResponse.json({
+                success: true,
+                items: resultItems,
+                ...meta
+            });
 
         } catch (genError) {
             console.error('Generation Error:', genError);

@@ -7,13 +7,9 @@ import { bulkAddItems, recordPurchase } from '@/app/actions';
 export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
     if (!isOpen) return null;
 
-    // scannedItems is now expected to be { store_name, purchase_date, items: [] } 
-    // or just [] (backward compatibility for old scanner API if not updated immediately)
-    // But since we updated the API, we interpret it as the new format.
-
     // Normalize data
     const initialData = Array.isArray(scannedItems)
-        ? { store_name: '', purchase_date: null, items: scannedItems }
+        ? { store_name: '', purchase_date: null, items: scannedItems, total_amount: 0 }
         : scannedItems;
 
     const [items, setItems] = useState([]);
@@ -22,6 +18,7 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [storeName, setStoreName] = useState(initialData.store_name || '');
     const [purchaseDate, setPurchaseDate] = useState(initialData.purchase_date || new Date().toISOString().split('T')[0]);
+    const [totalAmount, setTotalAmount] = useState(initialData.total_amount || 0);
 
     useEffect(() => {
         const rawItems = initialData.items || [];
@@ -45,6 +42,7 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
         setExcludedItems(exclude);
         setStoreName(initialData.store_name || '');
         setPurchaseDate(initialData.purchase_date || new Date().toISOString().split('T')[0]);
+        setTotalAmount(initialData.total_amount || 0);
     }, [scannedItems]);
 
     const handleItemChange = (listType, index, field, value) => {
@@ -107,6 +105,7 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
                 const purchaseData = {
                     store_name: storeName,
                     purchase_date: purchaseDate,
+                    total_amount: Number(totalAmount),
                     items: allItems.map(item => ({
                         name: item.name, // Fallback
                         raw_name: item.raw_name || item.name, // Use raw name if available
@@ -249,7 +248,7 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
                             style={{ width: '100%' }}
                         />
                     </div>
-                    <div style={{ width: '150px' }}>
+                    <div style={{ width: '140px' }}>
                         <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '4px' }}>購入日</label>
                         <input
                             type="date"
@@ -257,6 +256,16 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
                             onChange={(e) => setPurchaseDate(e.target.value)}
                             className={styles.input}
                             style={{ width: '100%' }}
+                        />
+                    </div>
+                    <div style={{ width: '120px' }}>
+                        <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '4px' }}>合計金額(円)</label>
+                        <input
+                            type="number"
+                            value={totalAmount}
+                            onChange={(e) => setTotalAmount(e.target.value)}
+                            className={styles.input}
+                            style={{ width: '100%', fontWeight: 'bold' }}
                         />
                     </div>
                 </div>
@@ -306,4 +315,3 @@ export default function ReceiptReviewModal({ isOpen, onClose, scannedItems }) {
         </div>
     );
 }
-
