@@ -1,11 +1,6 @@
 
 import { getMonthlyExpenses } from '@/app/actions';
-import dynamic from 'next/dynamic';
-
-const KakeiboDashboard = dynamic(() => import('@/components/KakeiboDashboard'), {
-    ssr: false,
-    loading: () => <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>読み込み中...</div>
-});
+import KakeiboDashboardLoader from '@/components/KakeiboDashboardLoader';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +17,7 @@ export default async function KakeiboPage({ searchParams }) {
     const serializedData = JSON.parse(JSON.stringify(data));
 
     return (
-        <KakeiboDashboard
+        <KakeiboDashboardLoader
             data={serializedData}
             currentMonth={month}
             currentYear={year}
