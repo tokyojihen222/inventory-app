@@ -7,7 +7,7 @@ const KakeiboDashboard = dynamic(() => import('@/components/KakeiboDashboard'), 
     loading: () => <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>読み込み中...</div>
 });
 
-export const dynamicMode = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 export default async function KakeiboPage({ searchParams }) {
     // Resolve searchParams before using properties
