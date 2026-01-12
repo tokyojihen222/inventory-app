@@ -7,9 +7,10 @@ export const maxDuration = 60;
 export async function POST(request) {
     try {
         const formData = await request.formData();
-        const file = formData.get('file');
+        // Support both 'files' (new) and 'file' (old) keys for robustness
+        const files = formData.getAll('files').length > 0 ? formData.getAll('files') : formData.getAll('file');
 
-        if (!file) {
+        if (!files || files.length === 0) {
             return NextResponse.json({ success: false, error: 'ファイルがありません' }, { status: 400 });
         }
 
@@ -20,15 +21,14 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // スクリーンショットで「5 RPM」の枠があることが確認できた "gemini-2.5-flash" を使用します
         const modelName = 'gemini-2.5-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
 
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
         const prompt = `
-    あなたは家事手伝いの専門家です。このレシート画像を解析し、家計簿と在庫管理のためのデータを抽出してください。
+    あなたは家事手伝いの専門家です。提供されたレシート画像の解析を行ってください。
+    画像が複数ある場合は、それらは「1つの長いレシートを分割撮影したもの」または「同時の買い物レシート」です。情報を統合して解析してください。
+    家計簿と在庫管理のためのデータを抽出してください。
+
     【出力ルール】
     1. store_name: レシート掲載の店名
     2. purchase_date: 購入日時 (YYYY-MM-DD形式、不明ならnull)
@@ -52,15 +52,19 @@ export async function POST(request) {
     }
     `;
 
-        const imagePart = {
-            inlineData: {
-                data: buffer.toString('base64'),
-                mimeType: file.type || 'image/jpeg',
-            },
-        };
+        const imageParts = await Promise.all(files.map(async (file) => {
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            return {
+                inlineData: {
+                    data: buffer.toString('base64'),
+                    mimeType: file.type || 'image/jpeg',
+                },
+            };
+        }));
 
         try {
-            const result = await model.generateContent([prompt, imagePart]);
+            const result = await model.generateContent([prompt, ...imageParts]);
             const responseText = result.response.text();
 
             const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();

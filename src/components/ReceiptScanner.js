@@ -62,17 +62,21 @@ export default function ReceiptScanner({ onScanComplete }) {
     };
 
     const handleFileChange = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
 
         // Start scanning state (modal remains open but changes content)
         setIsScanning(true);
         setErrorMsg('');
 
         try {
-            const resizedBlob = await resizeImage(file);
             const formData = new FormData();
-            formData.append('file', resizedBlob, 'receipt.jpg');
+
+            // Resize and append all files
+            for (let i = 0; i < files.length; i++) {
+                const resizedBlob = await resizeImage(files[i]);
+                formData.append('files', resizedBlob, `receipt_${i}.jpg`);
+            }
 
             const response = await fetch('/api/scan-receipt', {
                 method: 'POST',
@@ -165,7 +169,7 @@ export default function ReceiptScanner({ onScanComplete }) {
                                 <>
                                     <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>レシートを追加</h3>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                        写真をとるか、ライブラリから選択してください
+                                        写真をとるか、ライブラリから選択してください（複数枚可）
                                     </p>
 
                                     {errorMsg && (
@@ -192,6 +196,7 @@ export default function ReceiptScanner({ onScanComplete }) {
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept="image/*"
+                multiple
                 onChange={handleFileChange}
             />
 
