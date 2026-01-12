@@ -194,49 +194,93 @@
     .table td {
         display: block;
         width: 100%;
-    }
-
-    .table tr {
-        margin-bottom: 1rem;
-        border-radius: var(--radius);
-        padding: 1.25rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        box-shadow: none;
-    }
-
-    .table tr:hover {
-        transform: none;
-    }
-
-    .table td {
-        padding: 0.5rem 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         border: none;
     }
 
+    .table tr {
+        margin-bottom: 0.75rem;
+        border-radius: var(--radius);
+        padding: 1rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        /* Title | Quantity */
+        grid-template-areas:
+            "title quantity"
+            "meta meta"
+            "actions actions";
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /* Name (Title) */
     .table td:first-child {
+        grid-area: title;
         font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 0.75rem;
+        font-weight: 800;
+        margin: 0;
+        padding: 0;
+        border: none;
+        color: var(--text-main);
     }
 
-    /* Headers for mobile data */
-    .table td:not(:first-child)::before {
-        content: attr(data-label);
-        font-size: 0.8rem;
+    /* Quantity */
+    .table td:nth-child(3) {
+        grid-area: quantity;
+        justify-self: end;
+        padding: 0;
+    }
+
+    /* Hide Category Column on small mobile if needed, or move to meta */
+    .table td:nth-child(2) {
+        display: none;
+    }
+
+    /* Meta Info (Unit, Expiry, Price) - Group them if possible, but here we just stack them */
+    /* Since table structure is flat, we can't easily group <td>s without changing HTML.
+       We'll use order or grid placement tricks. 
+       Let's put Expiry and Price in the 'meta' area.
+    */
+
+    .table td:nth-child(4),
+    /* Unit */
+    .table td:nth-child(5),
+    /* Expiry */
+    .table td:nth-child(6)
+
+    /* Price */
+        {
+        grid-area: meta;
+        padding: 0;
+        font-size: 0.85rem;
         color: var(--text-muted);
-        font-weight: 600;
+        display: inline-block;
+        margin-right: 0.75rem;
     }
 
+    .table td:nth-child(5)::before {
+        content: '📅 ';
+    }
+
+    .table td:nth-child(6)::before {
+        content: '💰 ';
+    }
+
+    /* Actions */
     .table td:last-child {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
+        grid-area: actions;
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--border);
         justify-content: flex-end;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Remove data-labels for cleaner look */
+    .table td::before {
+        content: none !important;
     }
 }

@@ -175,23 +175,53 @@
 
 @media (max-width: 640px) {
     .mainContainer {
-        padding: 1rem;
+        padding: 1rem 0.5rem;
+        /* Less padding on sides */
     }
 
     .header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        /* Stretch to fill */
         gap: 1rem;
+        padding: 1rem;
+    }
+
+    .brand {
+        justify-content: center;
+        margin-bottom: 0.5rem;
     }
 
     .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* 2 columns */
+        gap: 0.75rem;
         width: 100%;
-        justify-content: space-between;
+        justify-content: stretch;
     }
 
     .controls>* {
-        flex: 1;
-        /* Make buttons expand */
+        flex: auto;
+        /* Reset flex-1 */
+        width: 100%;
+        margin: 0 !important;
+        /* Remove margins */
+    }
+
+    /* Make Memo and Kakeibo span 1 column each */
+    .btnMemo,
+    .btnKakeibo {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Make Add button span full width if needed, or keep in grid */
+    .btnAdd {
+        grid-column: span 2;
+        /* Full width for Add button */
+        justify-content: center;
+        padding: 0.8rem;
     }
 }
 
