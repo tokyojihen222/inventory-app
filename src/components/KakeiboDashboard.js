@@ -147,10 +147,31 @@ export default function KakeiboDashboard({ data, currentMonth, currentYear }) {
                             <div className={styles.historyAmount}>
                                 ¥{purchase.total_amount.toLocaleString()}
                             </div>
+                            <button
+                                onClick={() => handleDelete(purchase.id)}
+                                className={styles.deleteBtn}
+                                aria-label="削除"
+                            >
+                                🗑️
+                            </button>
                         </div>
                     ))}
                 </div>
             </div>
         </main>
     );
+
+    async function handleDelete(id) {
+        if (!confirm('このレシート履歴を削除してもよろしいですか？\n（家計簿からのみ削除され、在庫には影響しません）')) {
+            return;
+        }
+        try {
+            // Dynamically import action to avoid server action issues in client component if not passed as prop
+            // But since we are allowed to import server actions in Client Components in Next.js 14+:
+            const { deletePurchase } = await import('@/app/actions');
+            await deletePurchase(id);
+        } catch (e) {
+            alert('削除に失敗しました: ' + e.message);
+        }
+    }
 }

@@ -223,6 +223,16 @@ export async function recordPurchase(data) {
     revalidatePath('/kakeibo');
 }
 
+export async function deletePurchase(id) {
+    // 1. Delete items linked to this purchase
+    await sql`DELETE FROM purchase_items WHERE purchase_id = ${id}`;
+
+    // 2. Delete the purchase record itself
+    await sql`DELETE FROM purchases WHERE id = ${id}`;
+
+    revalidatePath('/kakeibo');
+}
+
 export async function getMonthlyExpenses(year, month) {
     const startDate = `${year}-${String(month).padStart(2, '0')}-01`; // '2025-01-01'
     const nextMonth = month === 12 ? 1 : month + 1;
