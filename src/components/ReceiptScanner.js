@@ -32,7 +32,7 @@ export default function ReceiptScanner({ onScanComplete }) {
                     let width = img.width;
                     let height = img.height;
                     const MAX_WIDTH = 1024;
-                    const MAX_HEIGHT = 1024;
+                    const MAX_HEIGHT = 4096;
 
                     if (width > height) {
                         if (width > MAX_WIDTH) {

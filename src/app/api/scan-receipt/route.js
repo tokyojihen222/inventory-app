@@ -21,7 +21,8 @@ export async function POST(request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = 'gemini-2.5-flash';
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const modelName = 'gemini-1.5-flash';
         const model = genAI.getGenerativeModel({ model: modelName });
 
         const prompt = `
@@ -29,10 +30,17 @@ export async function POST(request) {
     画像が複数ある場合は、それらは「1つの長いレシートを分割撮影したもの」または「同時の買い物レシート」です。情報を統合して解析してください。
     家計簿と在庫管理のためのデータを抽出してください。
 
-    【出力ルール】
-    1. store_name: レシート掲載の店名
-    2. purchase_date: 購入日時 (YYYY-MM-DD形式、不明ならnull)
-    3. itemsリスト:
+    【重要：抽出ルール】
+    1. store_name: 
+       - レシート最上部にあるロゴや大きな文字から店名を特定してください。
+       - "Tel"や"住所"ではありません。
+    2. purchase_date: 
+       - **重要**: 今日の日付ではなく、必ず【レシートに印字されている日付】を抽出してください。
+       - YYYY-MM-DD形式に変換してください。不明な場合はnull。
+    3. total_amount: 
+       - レシートの「合計」「小計」「Total」などの欄から数値を探してください。
+       - **重要**: 0や空欄は避けてください。明示的な合計がない場合は、各商品の金額を足し合わせて推測してください。
+    4. itemsリスト:
        - raw_name: レシート記載のそのままの商品名
        - name: 在庫管理用に変換した一般的な名称 (例: "セブンのおにぎり" → "おにぎり")
        - category: 「食品」「調味料」「消耗品」「日用品」「その他」から選択
@@ -40,11 +48,11 @@ export async function POST(request) {
        - price: 単価 (数値)
        - quantity: 数量 (数値)
        - is_fresh: 生鮮食品(肉、魚、野菜、果物、惣菜など)の場合 true
-    4. total_amount: レシート合計金額 (数値)。「合計」「小計」などから抽出。計算が合わない場合でもレシート記載の合計を優先。
+    
     5. JSON形式のみ出力
     {
       "store_name": "...",
-      "purchase_date": "...",
+      "purchase_date": "YYYY-MM-DD",
       "total_amount": 1000,
       "items": [
         { "raw_name": "...", "name": "...", "category": "...", "quantity": 1, "unit": "個", "price": 100, "is_fresh": false }
