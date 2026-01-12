@@ -189,3 +189,81 @@ export async function getPurchaseCandidates() {
     `;
     return candidates;
 }
+
+// Household Account Actions
+
+export async function recordPurchase(data) {
+    // data: { store_name, purchase_date, items: [{ name, price, quantity, category }] }
+
+    // 1. Create Purchase Record
+    const [purchase] = await sql`
+        INSERT INTO purchases (store_name, purchase_date, total_amount)
+        VALUES (
+            ${data.store_name}, 
+            ${data.purchase_date || new Date().toISOString()}, 
+            ${data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
+        )
+        RETURNING id
+    `;
+
+    // 2. Insert Items
+    for (const item of data.items) {
+        await sql`
+            INSERT INTO purchase_items (purchase_id, name, price, quantity, category)
+            VALUES (
+                ${purchase.id},
+                ${item.raw_name || item.name},
+                ${item.price},
+                ${item.quantity},
+                ${item.category}
+            )
+        `;
+    }
+
+    revalidatePath('/kakeibo');
+}
+
+export async function getMonthlyExpenses(year, month) {
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`; // '2025-01-01'
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+
+    const purchases = await sql`
+        SELECT * FROM purchases
+        WHERE purchase_date >= ${startDate} AND purchase_date < ${endDate}
+        ORDER BY purchase_date DESC
+    `;
+
+    const items = await sql`
+        SELECT pi.*, p.purchase_date 
+        FROM purchase_items pi
+        JOIN purchases p ON pi.purchase_id = p.id
+        WHERE p.purchase_date >= ${startDate} AND p.purchase_date < ${endDate}
+    `;
+
+    // Calculate category summary
+    const categorySummary = items.reduce((acc, item) => {
+        const cat = item.category || 'その他';
+        if (!acc[cat]) acc[cat] = 0;
+        acc[cat] += item.price * item.quantity;
+        return acc;
+    }, {});
+
+    // Calculate store summary
+    const storeSummary = purchases.reduce((acc, p) => {
+        const store = p.store_name || '不明';
+        if (!acc[store]) acc[store] = 0;
+        acc[store] += p.total_amount;
+        return acc;
+    }, {});
+
+    const total = purchases.reduce((sum, p) => sum + p.total_amount, 0);
+
+    return {
+        purchases,
+        categorySummary,
+        storeSummary,
+        total
+    };
+}

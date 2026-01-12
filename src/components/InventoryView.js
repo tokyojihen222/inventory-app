@@ -59,6 +59,10 @@ export default function InventoryView({ initialItems }) {
                         <span style={{ marginRight: '4px' }}>📝</span>
                         <span>メモ</span>
                     </Link>
+                    <Link href="/kakeibo" className={styles.btnKakeibo}>
+                        <span style={{ marginRight: '4px' }}>💰</span>
+                        <span>家計簿</span>
+                    </Link>
                     <button
                         onClick={handleAdd}
                         className={`${styles.btnAdd} btn-paw`}

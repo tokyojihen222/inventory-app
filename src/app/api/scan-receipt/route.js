@@ -28,15 +28,26 @@ export async function POST(request) {
         const buffer = Buffer.from(arrayBuffer);
 
         const prompt = `
-    あなたは家事手伝いの専門家です。このレシート画像を解析し、購入された商品をリストアップしてください。
+    あなたは家事手伝いの専門家です。このレシート画像を解析し、家計簿と在庫管理のためのデータを抽出してください。
     【出力ルール】
-    1. 商品名は「一般的な名称」に変換 (例: "セブンイレブンのおにぎり" → "おにぎり")
-    2. カテゴリは「食品」「調味料」「消耗品」「日用品」「その他」から選択
-    3. 単位は「個」「パック」「ケース」から最適と思われるものを推測 (デフォルトは「個」)
-    4. 金額(単価)を正確に読み取る (price)
-    5. is_fresh: すぐに消費すべき生鮮食品(肉、魚、野菜、果物、惣菜など)の場合 true, ストック可能なもの(調味料、冷凍食品、日用品など)は false
-    6. JSON配列形式のみ出力
-    [ { "name": "...", "category": "...", "quantity": 1, "unit": "個", "price": 100, "is_fresh": false } ]
+    1. store_name: レシート掲載の店名
+    2. purchase_date: 購入日時 (YYYY-MM-DD形式、不明ならnull)
+    3. itemsリスト:
+       - raw_name: レシート記載のそのままの商品名
+       - name: 在庫管理用に変換した一般的な名称 (例: "セブンのおにぎり" → "おにぎり")
+       - category: 「食品」「調味料」「消耗品」「日用品」「その他」から選択
+       - unit: 「個」「パック」「ケース」から推測
+       - price: 単価 (数値)
+       - quantity: 数量 (数値)
+       - is_fresh: 生鮮食品(肉、魚、野菜、果物、惣菜など)の場合 true
+    4. JSON形式のみ出力
+    {
+      "store_name": "...",
+      "purchase_date": "...",
+      "items": [
+        { "raw_name": "...", "name": "...", "category": "...", "quantity": 1, "unit": "個", "price": 100, "is_fresh": false }
+      ]
+    }
     `;
 
         const imagePart = {
