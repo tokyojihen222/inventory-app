@@ -16,6 +16,22 @@ export default function KakeiboDashboard({ data, currentMonth, currentYear }) {
     const routerMonth = currentMonth;
     const routerYear = currentYear;
 
+    // Defensive check
+    if (!data || !data.categorySummary || !data.storeSummary || !data.purchases) {
+        return (
+            <main className={styles.container}>
+                <div className={styles.header}>
+                    <Link href="/" className={styles.backLink}>← 在庫一覧に戻る</Link>
+                    <h1 className={styles.title}>家計簿ダッシュボード</h1>
+                </div>
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+                    データが読み込めませんでした。<br />
+                    データベース接続などを確認してください。
+                </div>
+            </main>
+        );
+    }
+
     // Data preparation
     const categoryData = Object.entries(data.categorySummary).map(([name, value]) => ({ name, value }));
     const storeData = Object.entries(data.storeSummary)
