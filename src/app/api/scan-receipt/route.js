@@ -22,7 +22,7 @@ export async function POST(request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        const modelName = 'gemini-3-flash';
+        const modelName = 'gemini-3-flash-preview';
         const model = genAI.getGenerativeModel({ model: modelName });
 
         const prompt = `
