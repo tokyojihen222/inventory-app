@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
 // 処理時間を長めに確保 (Vercel Serverless Function Config)
@@ -22,37 +22,66 @@ export async function POST(request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
 
+        const schema = {
+            description: "Receipt extraction",
+            type: SchemaType.OBJECT,
+            properties: {
+                store_name: {
+                    type: SchemaType.STRING,
+                    description: "Store name properly extracted from logo or text. Must be a non-empty string.",
+                    nullable: false
+                },
+                purchase_date: {
+                    type: SchemaType.STRING,
+                    description: "Date of purchase yyyy-mm-dd",
+                    nullable: true
+                },
+                total_amount: {
+                    type: SchemaType.NUMBER,
+                    description: "Total amount of the receipt",
+                    nullable: false
+                },
+                items: {
+                    type: SchemaType.ARRAY,
+                    items: {
+                        type: SchemaType.OBJECT,
+                        properties: {
+                            raw_name: { type: SchemaType.STRING },
+                            name: { type: SchemaType.STRING },
+                            category: { type: SchemaType.STRING },
+                            unit: { type: SchemaType.STRING },
+                            price: { type: SchemaType.NUMBER },
+                            quantity: { type: SchemaType.NUMBER },
+                            is_fresh: { type: SchemaType.BOOLEAN }
+                        },
+                        required: ["raw_name", "price", "quantity"]
+                    }
+                }
+            },
+            required: ["store_name", "total_amount", "items"]
+        };
+
         const modelName = 'gemini-3-flash-preview';
         const model = genAI.getGenerativeModel({
             model: modelName,
-            generationConfig: { responseMimeType: "application/json" }
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: schema
+            }
         });
 
         const prompt = `
     あなたは家事手伝いの専門家です。提供されたレシート画像の解析を行ってください。
     画像が複数ある場合は、それらは「1つの長いレシートを分割撮影したもの」または「同時の買い物レシート」です。情報を統合して解析してください。
 
-    【解析ステップ】
-    1. **店名の特定**: レシート最上部のロゴやテキスト、電話番号付近の「〜店」という表記を探し、チェーン名と店舗名を組み合わせてください。
-       - 不明な場合でも、レシートの中で「一番大きく目立つ文字」を店名として仮定してください。「不明」やnullは避けてください。
-    2. **日付の特定**: レシート内の日付（YYYY/MM/DD形式など）をすべて探し、購入日として最も適切なものを選んでください。
-    3. **合計金額の特定**: 「合計」「小計」「Total」の行を探してください。もし見つからない場合、数字の中で「最大の値」または「商品の合算値」を合計として採用してください。0円は避けてください。
+    【解析ステップ】 (思考プロセス)
+    1. **店名の特定**: 
+       - ロゴ、ヘッダーテキスト、電話番号付近の店舗名を探す。
+       - ロゴと店舗名が離れている場合（チェーン名＋○○店）、必ず結合する。
+       - どうしても見つからない場合でも、レシート内の「一番目立つ大きな文字」を店名として採用する。NULLは不可。
+    2. **日付の特定**: YYYY/MM/DD形式の日付を探す。
+    3. **合計金額の特定**: 「合計」「小計」「Total」を探す。見つからない場合は最大値や合計計算を行う。0円は不可。
 
-    【出力フォーマット】
-    JSON形式のみ出力してください。理由や思考過程は出力しないでください。
-
-    {
-      "store_name": "...", 
-      "purchase_date": "YYYY-MM-DD",
-      "total_amount": 1000,
-      "items": [
-        { "raw_name": "...", "name": "...", "category": "...", "quantity": 1, "unit": "個", "price": 100, "is_fresh": false }
-      ]
-    }
-    
-    * store_name は必ず文字列を返してください (null不可)。
-    * total_amount は必ず数値を返してください (0不可)。
-    * purchase_date は見つからなければ null 可。
     `;
 
         const imageParts = await Promise.all(files.map(async (file) => {
@@ -70,14 +99,33 @@ export async function POST(request) {
             const result = await model.generateContent([prompt, ...imageParts]);
             const responseText = result.response.text();
 
+            console.log("Gemini Raw Response:", responseText); // Debug log
+
             const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
             const data = JSON.parse(jsonStr);
+
             // Support both old format (array) and new format (object)
-            const resultItems = Array.isArray(data) ? data : data.items;
-            const meta = Array.isArray(data) ? {} : {
-                store_name: data.store_name,
+            const resultItems = Array.isArray(data) ? data : (data.items || []);
+
+            // --- Backend Fallback Logic ---
+            let finalTotal = data.total_amount;
+            if (!finalTotal || finalTotal === 0) {
+                // Calculate from items if total is missing or 0
+                const calculatedTotal = resultItems.reduce((acc, item) => acc + ((item.price || 0) * (item.quantity || 1)), 0);
+                if (calculatedTotal > 0) {
+                    finalTotal = calculatedTotal;
+                }
+            }
+
+            let finalStoreName = data.store_name;
+            if (!finalStoreName || finalStoreName === "null" || finalStoreName.trim() === "") {
+                finalStoreName = "店舗名不明";
+            }
+
+            const meta = {
+                store_name: finalStoreName,
                 purchase_date: data.purchase_date,
-                total_amount: data.total_amount
+                total_amount: finalTotal
             };
 
             return NextResponse.json({
@@ -88,25 +136,9 @@ export async function POST(request) {
 
         } catch (genError) {
             console.error('Generation Error:', genError);
-
-            // If model not found or other API error, try to list available models for debugging
-            let debugInfo = '';
-            try {
-                const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                if (listResp.ok) {
-                    const listData = await listResp.json();
-                    const availableModels = listData.models ? listData.models.map(m => m.name) : [];
-                    debugInfo = `Available models: ${availableModels.join(', ')}`;
-                } else {
-                    debugInfo = `Failed to list models: ${listResp.status} ${listResp.statusText}`;
-                }
-            } catch (listErr) {
-                debugInfo = `Could not list models: ${listErr.message}`;
-            }
-
             return NextResponse.json({
                 success: false,
-                error: `AI生成エラー: ${genError.message}. \n\n[デバッグ情報] API Key Prefix: ${apiKey.substring(0, 4)}... \n${debugInfo}`
+                error: `AI生成エラー: ${genError.message}`
             }, { status: 500 });
         }
 
