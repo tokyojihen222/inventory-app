@@ -94,7 +94,7 @@ export default function ReceiptScanner({ onScanComplete }) {
             }
 
             if (result.success) {
-                setScannedItems(result.items);
+                setScannedItems(result); // Pass full result (items, store_name, etc.)
                 // Transitions
                 setShowPrepModal(false); // Close prep modal
                 setShowReview(true); // Open review modal
