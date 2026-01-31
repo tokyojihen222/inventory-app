@@ -205,13 +205,14 @@
         border: 1px solid var(--border);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
         display: grid;
-        grid-template-columns: 1fr auto;
-        /* Title | Quantity */
+        grid-template-columns: auto auto 1fr;
+        /* Unit | Date | Price (fills rest) */
         grid-template-areas:
-            "title quantity"
-            "meta meta"
-            "actions actions";
-        gap: 0.5rem;
+            "title title quantity"
+            "unit date price"
+            "actions actions actions";
+        gap: 0.5rem 0.75rem;
+        /* Row gap, Col gap */
         align-items: center;
     }
 
@@ -238,34 +239,38 @@
         display: none;
     }
 
-    /* Meta Info (Unit, Expiry, Price) - Group them if possible, but here we just stack them */
-    /* Since table structure is flat, we can't easily group <td>s without changing HTML.
-       We'll use order or grid placement tricks. 
-       Let's put Expiry and Price in the 'meta' area.
-    */
-
-    .table td:nth-child(4),
-    /* Unit */
-    .table td:nth-child(5),
-    /* Expiry */
-    .table td:nth-child(6)
-
-    /* Price */
-        {
-        grid-area: meta;
+    /* Meta Info - Distinct Areas to prevent overlap */
+    .table td:nth-child(4) {
+        /* Unit */
+        grid-area: unit;
         padding: 0;
         font-size: 0.85rem;
         color: var(--text-muted);
-        display: inline-block;
-        margin-right: 0.75rem;
+    }
+
+    .table td:nth-child(5) {
+        /* Price */
+        grid-area: price;
+        padding: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-align: right;
+    }
+
+    .table td:nth-child(6) {
+        /* Date */
+        grid-area: date;
+        padding: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
     }
 
     .table td:nth-child(5)::before {
-        content: '📅 ';
+        content: '💰 ';
     }
 
     .table td:nth-child(6)::before {
-        content: '💰 ';
+        content: '📅 ';
     }
 
     /* Actions */
