@@ -23,7 +23,10 @@ export async function POST(request) {
         const genAI = new GoogleGenerativeAI(apiKey);
 
         const modelName = 'gemini-3-flash-preview';
-        const model = genAI.getGenerativeModel({ model: modelName });
+        const model = genAI.getGenerativeModel({
+            model: modelName,
+            generationConfig: { responseMimeType: "application/json" }
+        });
 
         const prompt = `
     あなたは家事手伝いの専門家です。提供されたレシート画像の解析を行ってください。
